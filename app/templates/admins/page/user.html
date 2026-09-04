@@ -1,0 +1,639 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+{% if act == 'show' %}
+<style>
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    /* The slider */
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .3s;
+        transition: .3s;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 2px;
+        bottom: 2px;
+        background-color: white;
+        -webkit-transition: .3s;
+        transition: .3s;
+    }
+
+    input:checked+.slider {
+        background-color: #44a85b;
+    }
+
+    input:focus+.slider {
+        box-shadow: 0 0 1px #44a85b;
+    }
+
+    input:checked+.slider:before {
+        -webkit-transform: translateX(20px);
+        -ms-transform: translateX(20px);
+        transform: translateX(20px);
+    }
+
+    .slider.round {
+        border-radius: 10px;
+    }
+
+    .slider.round:before {
+        border-radius: 50%;
+    }
+</style>
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Utilizador</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item active">Utilizador</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-table"></i>
+                        <h3 class="card-title mb-0">Dadus Utilizador</h3> |
+                        <a href="{% url 'app:addUser' %}">
+                            <button style="border-radius: 6px;"><b>Add +</b></button>
+                        </a>
+                    </div>
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    <div class="card-body">
+                        <table id="example1" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
+                                    <th>Password</th>
+                                    <th>Permission</th>
+                                    <th>#</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in dadus %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{data.username}}</td>
+                                    <td>{{data.email}}</td>
+                                    <td>{{data.first_name}}</td>
+                                    <td>{{data.last_name}}</td>
+                                    <td>
+                                        {% if not data.password %}
+                                        <a href="{% url 'app:setPassword' data.id|encrypt %}">
+                                            <button type="button" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-key"></i> Set Password
+                                            </button>
+                                        </a>
+                                        {% else %}
+                                        <span>Password set &amp; encrypted</span>
+                                        {% endif %}
+                                    </td></a>
+                                    <td align="center">
+                                        <label class="switch">
+                                            {% if data.is_active == True %}
+                                            <input type="checkbox" checked
+                                                onclick="return update('{{data.id|encrypt}}'+','+'0');">
+                                            {% elif data.is_active == False %}
+                                            <input type="checkbox"
+                                                onclick="return update('{{data.id|encrypt}}'+','+'1');">
+                                            {% endif %}
+                                            <span class="slider round"></span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'app:editUser' data.id|encrypt %}"><button style="border-radius: 4px;"><i
+                                                class="fa fa-edit"></i></button></a> 
+                                        | 
+                                        <form action="{% url 'app:resetPassword' data.id|encrypt %}" method="POST" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" title="Update Password" style="border-radius: 4px;">
+                                                <i class="fas fa-lock"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function update(data) {
+        var data = data.split(",");
+        var id = data[0];
+        var status = data[1];
+        $.ajax({
+            url: "{% url 'app:permisaun' %}",
+            type: "POST",
+            data: {
+                'hash': id,
+                'status': status,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function (data) {
+                window.location.reload();
+            }
+        });
+    }
+</script>
+{% elif act == 'input' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Utilizador</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'app:user' %}">Utilizador</a></li>
+                    <li class="breadcrumb-item active">Formulariu Aumenta Utilizador</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-plus mr-1"></i>
+                        <h3 class="card-title mb-0">Formulariu Utilizador</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if message %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                        {% endif %}
+                        <form action="" method="post" autocomplete="off">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Username:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-user"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="Prienxe Username"
+                                        name="username" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Email:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-envelope"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="Prienxe Email" name="email"
+                                        autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>First Name:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-user"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="Prienxe First Name"
+                                        name="first_name" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-user"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="Prienxe Last Name"
+                                        name="last_name" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputPassword">Group*</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-users"></i></span>
+                                    </div>
+                                    <select name="group" class="form-control">
+                                        <option>-------</option>
+                                        {% for data in dadus_group %}
+                                        <option value="{{data.id}}">{{data.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary float-left">
+                                        <i class="fas fa-save"></i> Submete
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% elif act == 'setpassword' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Utilizador</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'app:user' %}">Utilizador</a></li>
+                    <li class="breadcrumb-item active">Formulariu Set Password</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                            <i class="fas fa-key mr-1"></i>
+                            <h3 class="card-title mb-0">Set Password Foun</h3>
+                        </div>
+                        <div class="card-body">
+                            {% if message %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ message }}
+                            </div>
+                            {% endif %}
+                            <form action="" method="post" autocomplete="off">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label>Password Foun:</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                        </div>
+                                        <input type="password" class="form-control" name="password1"
+                                            placeholder="Tau password foun" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Konfirma Password:</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                        </div>
+                                        <input type="password" class="form-control" name="password2"
+                                            placeholder="Repete password foun" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary float-left">
+                                        <i class="fas fa-save"></i> Rai Password
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
+{% elif act == 'edit' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Utilizador</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'app:user' %}">Utilizador</a></li>
+                    <li class="breadcrumb-item active">Formulariu Edita Utilizador</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-edit mr-1"></i>
+                        <h3 class="card-title mb-0">Edita Utilizador</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if message %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                        {% endif %}
+                        <form action="" method="post" autocomplete="off">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Username:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-user"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" name="username" value="{{ user.username }}"
+                                        autocomplete="off" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Email:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-envelope"></i></span>
+                                    </div>
+                                    <input type="email" class="form-control" name="email" value="{{ user.email }}"
+                                        autocomplete="off" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>First Name:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-user"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" name="first_name"
+                                        value="{{ user.first_name }}" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-user"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" name="last_name"
+                                        value="{{ user.last_name }}" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputGroup">Group*</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-users"></i></span>
+                                    </div>
+                                    <select name="group" class="form-control">
+                                        <option>-------</option>
+                                        {% for data in dadus_group %}
+                                        <option value="{{data.id}}"
+                                        {% if data.name == user1 %}
+                                        selected
+                                        {% endif %}
+                                        >{{data.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary float-left">
+                                    <i class="fas fa-save"></i> Rai Mudansa
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% elif act == 'changepw' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Utilizador</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item active">Formulariu Troka Password</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-key mr-1"></i>
+                        <h3 class="card-title mb-0">Troka Password</h3>                        
+                    </div>
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    <div class="card-body">
+                        {% if message %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                        {% endif %}
+                        <form action="" method="post" autocomplete="off">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Password Foun:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    </div>
+                                    <input type="password" class="form-control" name="password1"
+                                        placeholder="Tau password foun" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Konfirma Password:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    </div>
+                                    <input type="password" class="form-control" name="password2"
+                                        placeholder="Repete password foun" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary float-left">
+                                    <i class="fas fa-save"></i> Rai Mudansa
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% elif act == 'konta' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Utilizador Konta</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item active">Utilizador Konta</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-table"></i>
+                        <h3 class="card-title mb-0">Konta Utilizador</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mx-auto">
+                                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                                    <div class="card-body bg-light text-center p-5">
+                                        
+                                        <!-- Icon User -->
+                                        <div class="d-flex justify-content-center mb-3">
+                                            <div class="rounded-circle bg-gradient text-white d-flex align-items-center justify-content-center shadow-sm" 
+                                                style="width: 100px; height: 100px;">
+                                                <!-- <i class="fas fa-user fa-3x"></i> -->
+                                                 <img src="{% static 'img/EDTL.png' %}" alt="User Icon" class="img-fluid" style="width: 90px; height: 90px;">
+                                            </div>
+                                        </div>
+
+                                        <!-- Nama User (rata tengah visual dan layout) -->
+                                        <div class="d-flex justify-content-center">
+                                            <h5 class="card-title fw-bold text-dark text-center mb-1" style="width: fit-content; text-align: center;">
+                                                {{ user.get_full_name|default:user.username }}
+                                            </h5>
+                                        </div>
+
+                                        <!-- Email -->
+                                        <p class="card-text text-muted small mb-3 text-center">{{ user.email }}</p>
+
+                                        <hr class="my-3 w-50 mx-auto">
+
+                                        <!-- Info waktu -->
+                                        <small class="text-secondary d-block text-center">
+                                            <i class="far fa-calendar-alt me-1"></i>
+                                            User kria iha {{ user.date_joined|date:"M Y" }}
+                                        </small>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0"><i class="fas fa-info-circle"></i> Detalhes Utilizador</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <p><strong>Username:</strong> {{ user.username }}</p>
+                                                <p><strong>Email:</strong> {{ user.email }}</p>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <p><strong>First Name:</strong> {{ user.first_name }}</p>
+                                                <p><strong>Last Name:</strong> {{ user.last_name }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <p><strong>Level:</strong> {{ user.groups.first.name|default:'N/A' }}</p>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <p><strong>Status:</strong> {% if user.is_active %}Ativo{% else %}Inativo{% endif %}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

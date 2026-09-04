@@ -1,0 +1,67 @@
+{% load custom_filters %}
+<div class="card">
+<div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+    <i class="fas fa-table"></i>
+    <h3 class="card-title mb-0">Dadus Kliente Final</h3>
+</div>
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% endfor %}
+{% endif %}
+<div class="card-body">
+    <table id="example1" class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Naran</th>
+                <th>ID Identidade</th>
+                <th>Kompanha</th>
+                <th>Kategoria</th>
+                <th>Hela Fatin</th>
+                <th>Numeru</th>
+                {% for group in request.user.groups.all %}
+                {% if group.name == "admin" %}
+                <th>#</th>
+                {% endif %}
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in dadus %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{data.naran}}</td>
+                <td>{{data.id_identidade}}</td>
+                <td>{{data.naran_kompanhia}}</td>
+                <td>{{data.kategoria_kliente}}</td>
+                <td>{{data.hela_fatin}}</td>
+                <td>{{data.no_tlf}}</td>
+                {% for group in request.user.groups.all %}
+                {% if group.name == "admin" %}
+                <td>
+                    <a href="{% url 'app:editKlientefinal' data.id|encrypt %}" class="btn btn-sm">
+                        <button style="border-radius: 4px;"><i class="fas fa-edit"></i></button>
+                    </a>
+                    |
+                    <a href="{% url 'app:klientefinalKontador' data.id|encrypt %}" class="btn btn-sm">
+                        <button style="border-radius: 4px;"><i class="nav-icon fas fa-tachometer-alt"></i></button>
+                    </a>
+                    |
+                    <a href="{% url 'app:klientefinalKontadorImajen' data.id|encrypt %}" class="btn btn-sm">
+                        <button style="border-radius: 4px;"><i class="fas fa-image"></i></button>
+                    </a>
+                </td>
+                {% endif %}
+                {% endfor %}                
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>

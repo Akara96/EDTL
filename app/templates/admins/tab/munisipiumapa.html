@@ -1,0 +1,62 @@
+{% load static %}
+<!-- LEAFLET -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<!-- LEAFLET -->
+
+<div id="map" style="width:100%; height:350px"></div>
+
+<!-- LEAFLET -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<!-- LEAFLET -->
+
+<script>
+    var map = L.map('map').setView([-8.769408, 125.976319], 10);
+
+    var basemaps = {
+        OpenStreetMap: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 20,
+            layers: 'TOPO-WMS'
+        }),
+
+        GoogleSatellite: L.tileLayer.wms('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+        }),
+    };
+    L.control.layers(basemaps, {}, {
+        collapsed: false
+    }).addTo(map);
+
+    basemaps.OpenStreetMap.addTo(map);
+
+    map.setView([-8.769408, 125.976319], 8);
+
+    map.locate({
+        setView: true,
+        maxZoom: 9
+    });
+
+    var lokaliza = L.icon({
+        iconUrl: '{% static "icon/icon.png" %}',
+        iconSize: [9, 9]
+    });
+
+    {% for area in dadus %}
+        var latlngs = [
+            {{ area.area|safe }}
+        ];
+
+        L.polygon(latlngs, {
+            fillColor: '{{ area.outline_color }}',
+            weight: 1.5,
+            opacity: 1,
+            color: 'black',
+            dashArray: '2',
+            fillOpacity: 0.05
+        }).addTo(map).bindTooltip("<b>{{ area.munisipiu }}</b>", {
+            permanent: true,
+            direction: 'center',
+            className: 'my-label'
+        });
+    {% endfor %}
+</script>

@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- LEAFLET -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<!-- LEAFLET -->
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="m-0">Dashboard</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+          <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-6 col-6">
+        <div class="small-box bg-info">
+          <div class="inner" align="center">
+            <h1>{{totalKliente}}</h1>
+            <p>Total Kliente Registado</p>
+          </div>
+          <div class="icon">
+            <i class="ion ion-person"></i>
+          </div>
+          <a href="#" class="small-box-footer">Haree Liutan <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+      </div>
+
+      <div class="col-lg-6 col-6">
+        <div class="small-box bg-success">
+          <div class="inner" align="center">
+            <h1>{{totalMontajen}}</h1>
+            <p>Total Montagen Kontador Mensal </p>
+          </div>
+          <div class="icon">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <a href="#" class="small-box-footer">Haree Liutan <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body py-2">
+        <form method="get" class="form-inline align-items-center w-100" style="flex-wrap: nowrap;">
+          <label class="mb-0 mr-2 font-weight-bold" for="filter-date">
+            <i class="fas fa-filter mr-1"></i> Filtru Informasaun
+          </label>
+          <div class="input-group flex-grow-1" style="min-width:200px; width:100%; max-width:1100px;">
+            <input type="text" id="filter-date" name="data" class="form-control" autocomplete="off" placeholder="Opsaun Kalendariu">
+            <select name="tinan" id="tinan" class="form-control">
+                <option value="">Opsaun Tinan</option>
+                
+            </select>
+            <select name="fulan" id="fulan" class="form-control">
+                <option value="">Opsaun Fulan</option>
+                
+            </select>
+            <div class="input-group-append">
+              <button type="submit" class="btn btn-outline-secondary" style="border-radius: 0 6px 6px 0;">
+                <i class="fa fa-eye"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+        <!-- Flatpickr Date Picker -->
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> -->
+        <link rel="stylesheet" href="{% static 'kalendariu/flatpickr.min.css' %}">
+        <script src="{% static 'kalendariu/flatpickr.js' %}"></script>
+        <script>
+          flatpickr("#filter-date", {
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            locale: {
+              firstDayOfWeek: 1
+            }
+          });
+        </script>
+        <style>
+          @media (max-width: 768px) {
+            .form-inline.align-items-center.w-100 {
+              flex-direction: column !important;
+              align-items: stretch !important;
+            }
+
+            .form-inline.align-items-center.w-100 label,
+            .form-inline.align-items-center.w-100 .input-group {
+              width: 100% !important;
+              margin-right: 0 !important;
+              margin-bottom: 8px;
+            }
+          }
+
+          .form-inline.align-items-center.w-100 .input-group.flex-grow-1 {
+            flex: 1 1 auto;
+          }
+        </style>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <section class="col-lg-8">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-map mr-1"></i>
+              Total Montagen Kontador bazeia ba Munisipiu no Lokalizasaun Kliente
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="tab-content p-0">
+              <div class="chart tab-pane active" id="sales-chart" style="position: relative; height: auto;">
+                <div id="map" style="width:100%; height:450px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="col-lg-4">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-table mr-1"></i>
+              Total Montagen Kontador bazeia ba Dadus Munisipiu
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="tab-content p-0">
+              <div class="chart tab-pane active" id="sales-chart" style="position: relative; height: auto;">
+                <table class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Munisipiu</th>
+                      <th>Total Kontador</th>
+                      <th>#</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                        {% for k in kontadorbymapa %}
+                          <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ k.trafo__feeder__munisipiu__munisipiu }}</td>
+                            <td>{{ k.kontador_count }}</td>
+                            <td>
+                              <a href="#" class="btn btn-sm btn-primary">Haree</a>
+                            </td>
+                          </tr>
+                        {% empty %}
+                          <tr>
+                            <td colspan="4" class="text-center">No data</td>
+                          </tr>
+                        {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+
+<!-- LEAFLET -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<!-- LEAFLET -->
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script>
+  var map = L.map('map').setView([-8.769408, 125.976319], 10);
+
+  var basemaps = {
+    OpenStreetMap: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 20
+    }),
+
+    GoogleSatellite: L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+      maxZoom: 20,
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+    }),
+  };
+  L.control.layers(basemaps, {}, { collapsed: false }).addTo(map);
+  basemaps.OpenStreetMap.addTo(map);
+
+  var lokaliza = L.icon({
+    iconUrl: '{% static "img/EDTL.png" %}',
+    iconSize: [12, 12]
+  });
+
+  var polygons = {};
+  var allPolygons = [];
+
+  {% for area in kontadorbymapa %}
+    var latlngs_{{ area.id }} = [
+      {{ area.trafo__feeder__munisipiu__area|safe }}
+    ];
+
+    var polygon_{{ area.id }} = L.polygon(latlngs_{{ area.id }}, {
+      fillColor: '{{ area.trafo__feeder__munisipiu__outline_color }}',
+      weight: 1.5,
+      opacity: 1,
+      color: 'black',
+      dashArray: '2',
+      fillOpacity: 0.02
+    }).bindTooltip("<b>{{ area.kontador_count }}</b>", {
+      permanent: true,
+      direction: 'center',
+      className: 'my-label'
+    }).bindPopup("<b>{{ area.trafo__feeder__munisipiu__munisipiu }}</b>", {
+      maxWidth: 200
+    });
+    polygons["{{ area.trafo__feeder__munisipiu__munisipiu|escapejs }}"] = polygon_{{ area.id }};
+    allPolygons.push(polygon_{{ area.id }});
+    polygon_{{ area.id }}.addTo(map);
+  {% endfor %}
+
+  // Hide polygon tooltips when zoomed in past level 13, show otherwise
+  map.on('zoomend', function() {
+    var zoom = map.getZoom();
+    Object.values(polygons).forEach(function(polygon) {
+      var tooltip = polygon.getTooltip();
+      if (tooltip) {
+        if (zoom >= 10) {
+          polygon.closeTooltip();
+        } else {
+          polygon.openTooltip();
+        }
+      }
+    });
+  });
+  
+</script>
+{% endblock %}

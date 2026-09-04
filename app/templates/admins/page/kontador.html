@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block content %}
+{% if act == 'show' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Kontador</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item active">Kontador</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-table"></i>
+                        <h3 class="card-title mb-0">Dadus Kontador</h3>
+                    </div>
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <ul class="nav nav-tabs nav-fill bg-light" id="custom-content-above-tab" role="tablist" style="overflow:hidden;">
+                                <li class="nav-item" style="margin-right: 5px;">
+                                    <a class="nav-link {% if request.GET.tab == 'tab_kondadus' or not request.GET.tab %}active{% endif %}" href="{% url 'app:kontador' %}?tab=tab_kondadus" role="tab" aria-selected="{% if request.GET.tab == 'tab_mundadus' or not request.GET.tab %}true{% else %}false{% endif %}">
+                                        <i class="fas fa-table"></i> Dadus Tabular
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.GET.tab == 'tab_konmapa' %}active{% endif %}" href="{% url 'app:kontador' %}?tab=tab_konmapa" role="tab" aria-selected="{% if request.GET.tab == 'tab_konmapa' %}true{% else %}false{% endif %}">
+                                        <i class="fas fa-map-marked-alt"></i> Mapa
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="tab-content" id="custom-content-above-tabContent">
+                            {% if request.GET.tab == 'tab_kondadus' or not request.GET.tab %}
+                                {% include 'admins/tab/kontadordadus.html' %}
+                            {% elif request.GET.tab == 'tab_konmapa' %}
+                                {% include 'admins/tab/kontadormapa.html' %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% elif act == 'input' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Tekniku</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'app:tekniku' %}">Tekniku</a></li>
+                    <li class="breadcrumb-item active">Formulariu Aumenta Tekniku</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-plus mr-1"></i>
+                        <h3 class="card-title mb-0">Formulariu Tekniku</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if message %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                        {% endif %}
+                        <form action="" method="post" autocomplete="off">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>ID Tekniku:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-id-card"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="Prienxe ID Tekniku"
+                                        name="id_tekniku" maxlength="10" autocomplete="off" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Naran:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-user"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="Prienxe Naran"
+                                        name="naran" maxlength="50" autocomplete="off" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Enderesu:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-map-marker-alt"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="Prienxe Enderesu"
+                                        name="enderesu" maxlength="25" autocomplete="off" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Email:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-envelope"></i></span>
+                                    </div>
+                                    <input type="email" class="form-control" placeholder="Prienxe Email"
+                                        name="email" maxlength="50" autocomplete="off" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>No Telefone:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-phone"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="Prienxe No Telefone"
+                                        name="no_tlf" maxlength="8" autocomplete="off" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>User:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-user-circle"></i></span>
+                                    </div>
+                                    <select name="user" class="form-control">
+                                        <option value="">-------</option>
+                                        {% for u in user %}
+                                        <option value="{{ u.id }}">{{ u.username }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary float-left">
+                                    <i class="fas fa-save"></i> Submete
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% elif act == 'edit' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Tekniku</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'app:tekniku' %}">Tekniku</a></li>
+                    <li class="breadcrumb-item active">Formulariu Atualiza Tekniku</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-plus mr-1"></i>
+                        <h3 class="card-title mb-0">Formulariu Tekniku</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if message %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                        {% endif %}
+                        <form action="" method="post" autocomplete="off">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>ID Tekniku:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-id-card"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control"
+                                           name="id_tekniku" maxlength="10" autocomplete="off"
+                                           value="{{ data.id_tekniku }}" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Naran:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-user"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" name="naran" maxlength="50"
+                                           value="{{ data.naran }}" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Enderesu:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-map-marker-alt"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" name="enderesu" maxlength="25"
+                                           value="{{ data.enderesu }}" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Email:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-envelope"></i></span>
+                                    </div>
+                                    <input type="email" class="form-control" name="email" maxlength="50"
+                                           value="{{ data.email }}" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>No Telefone:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-phone"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" name="no_tlf" maxlength="8"
+                                           value="{{ data.no_tlf }}" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>User:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-user-circle"></i></span>
+                                    </div>
+                                    <select name="user" class="form-control">
+                                        <option value="">-------</option>
+                                        {% for u in user %}
+                                            <option value="{{ u.id }}" {% if data.user and u.id == data.user.id %}selected{% endif %}>
+                                                {{ u.username }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary float-left">
+                                    <i class="fas fa-save"></i> Atualiza
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

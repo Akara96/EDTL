@@ -1,0 +1,388 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block content %}
+{% if act == 'show' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Pagamento</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item active">Pagamento</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-table"></i>
+                        <h3 class="card-title mb-0">Dadus Pagemento</h3> 
+                        {% for group in request.user.groups.all %}
+                        {% if group.name == "administrasaun" %}
+                        | 
+                        <a href="{% url 'app:addPagamentu' %}">
+                            <button style="border-radius: 6px;"><b>Add +</b></button>
+                        </a>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    <div class="card-body">
+                        <table id="example1" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Kliente</th>
+                                    <th>Kategoria</th>
+                                    <th>Montante Selu</th>                                    
+                                    {% for group in request.user.groups.all %}
+                                    {% if group.name == "administrasaun" %}
+                                    <th>Aksaun</th>
+                                    {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in selu %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{data.cliente.naran}}</td>
+                                    <td>{{data.cliente.kategoria_kliente}}</td>
+                                    <td>{{data.montante}}</td>
+                                    {% for group in request.user.groups.all %}
+                                    {% if group.name == "administrasaun" %}
+                                    <td>
+                                        <a href="{% url 'app:editPagamentu' data.id|encrypt %}" class="btn btn-sm">
+                                            <button style="border-radius: 4px;"><i class="fas fa-edit"></i></button>
+                                        </a>
+                                        |
+                                        <a href="{% url 'app:imprimePagemento' data.cliente_id|encrypt %}" target="_blank" class="btn btn-sm">
+                                            <button style="border-radius: 4px;"><i class="fas fa-print"></i></button>
+                                        </a>
+                                    </td>
+                                    {% endif %}
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% elif act == 'add' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Add Pagamentu</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'app:pagamento' %}">Pagamento</a></li>
+                    <li class="breadcrumb-item active">Formulariu Pagamento</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Add Pagamentu</h3>
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="cliente">Kliente</label>
+                                <select class="form-control" id="cliente" name="cliente" required onchange="getSurveyData(this.value)">
+                                    <option value="">Hili Kliente</option>
+                                    {% for clientes in dadus %}
+                                    <option value="{{ clientes.id }}" data-cliente='{"naran": "{{ clientes.cliente.naran }}", "kategoria": "{{ clientes.cliente.kategoria_kliente }}", "nu_kontador": "{{ clientes.nu_kontador }}"}'>{{ clientes.cliente.naran }} ({{clientes.nu_kontador}})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div id="cliente-details">
+                                <h4>Detallu Dadus Kliente no Survey</h4>
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Naran:</strong></td>
+                                            <td><span id="cliente-naran"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Kategoria:</strong></td>
+                                            <td><span id="cliente-kategoria"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Nu Kontador:</strong></td>
+                                            <td><span id="cliente-kontador"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Tipu Ligasaun:</strong></td>
+                                            <td><span id="survey-tipu_ligasaun"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Feeder:</strong></td>
+                                            <td><span id="survey-feeder"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Nu Trafo:</strong></td>
+                                            <td><span id="survey-nu_trafo"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Data Survey:</strong></td>
+                                            <td><span id="survey-data_survey"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Tekniku:</strong></td>
+                                            <td><span id="survey-tekniku"></span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <script>
+                            document.getElementById('cliente').addEventListener('change', function() {
+                                var selectedOption = this.options[this.selectedIndex];
+                                if (selectedOption.value) {
+                                    var clienteData = JSON.parse(selectedOption.getAttribute('data-cliente'));
+                                    document.getElementById('cliente-naran').textContent = clienteData.naran;
+                                    document.getElementById('cliente-kategoria').textContent = clienteData.kategoria;
+                                    document.getElementById('cliente-kontador').textContent = clienteData.nu_kontador;
+                                    document.getElementById('cliente-details').style.display = 'block';
+                                } else {
+                                    document.getElementById('cliente-details').style.display = 'none';
+                                }
+                            });
+                            </script>
+                            <div class="form-group">
+                                <label for="montante">Montante Selu</label>
+                                <input type="number" class="form-control" id="montante" name="montante" step="0.01" readonly required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Salva</button>
+                            <a href="{% url 'app:pagamento' %}?act=show" class="btn btn-secondary">Kansela</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    function getSurveyData(cliente){
+        $.ajax({
+            type: "GET",
+            url: "{% url 'app:getSurveyData' 1 %}",
+            success: function(data) {
+                if (data['message'] === 'success') {
+                    document.getElementById('survey-tipu_ligasaun').textContent = data['data']['tipu_ligasaun'] || '';
+                    document.getElementById('survey-feeder').textContent = data['data']['feeder'] || '';
+                    document.getElementById('survey-nu_trafo').textContent = data['data']['nu_trafo'] || '';
+                    document.getElementById('survey-data_survey').textContent = data['data']['data_survey'] || '';
+                    document.getElementById('survey-tekniku').textContent = data['data']['tekniku'] || '';
+                    document.getElementById('montante').value = data['data']['montante'] || '';
+                }
+            }
+        });
+    }
+</script>
+{% elif act == 'edit' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Edit Pagamentu</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'app:pagamento' %}">Pagamento</a></li>
+                    <li class="breadcrumb-item active">Formulariu Pagamento</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Edit Pagamentu</h3>
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="cliente">Kliente</label>
+                                <select class="form-control" id="cliente" name="cliente" required onload="getSurveyData(this.value)" onchange="getSurveyData(this.value)">
+                                    <option value="">Hili Kliente</option>
+                                    {% for clientes in dadus %}
+                                    <option value="{{ clientes.id }}" {% if clientes.id == data.cliente.id %}selected{% endif %} data-cliente='{"naran": "{{ clientes.cliente.naran }}", "kategoria": "{{ clientes.cliente.kategoria_kliente }}", "nu_kontador": "{{ clientes.nu_kontador }}"}'>{{ clientes.cliente.naran }} ({{clientes.nu_kontador}})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div id="cliente-details">
+                                <h4>Detallu Dadus Kliente no Survey</h4>
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Naran:</strong></td>
+                                            <td><span id="cliente-naran"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Kategoria:</strong></td>
+                                            <td><span id="cliente-kategoria"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Nu Kontador:</strong></td>
+                                            <td><span id="cliente-kontador"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Tipu Ligasaun:</strong></td>
+                                            <td><span id="survey-tipu_ligasaun"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Feeder:</strong></td>
+                                            <td><span id="survey-feeder"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Nu Trafo:</strong></td>
+                                            <td><span id="survey-nu_trafo"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Data Survey:</strong></td>
+                                            <td><span id="survey-data_survey"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Tekniku:</strong></td>
+                                            <td><span id="survey-tekniku"></span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <script>
+                            var select = document.getElementById('cliente');
+                            if (select.value) {
+                                var selectedOption = select.options[select.selectedIndex];
+                                var clienteData = JSON.parse(selectedOption.getAttribute('data-cliente'));
+                                document.getElementById('cliente-naran').textContent = clienteData.naran;
+                                document.getElementById('cliente-kategoria').textContent = clienteData.kategoria;
+                                document.getElementById('cliente-kontador').textContent = clienteData.nu_kontador;
+                                document.getElementById('cliente-details').style.display = 'block';
+                            }
+
+                            document.getElementById('cliente').addEventListener('change', function() {
+                                var selectedOption = this.options[this.selectedIndex];
+                                if (selectedOption.value) {
+                                    var clienteData = JSON.parse(selectedOption.getAttribute('data-cliente'));
+                                    document.getElementById('cliente-naran').textContent = clienteData.naran;
+                                    document.getElementById('cliente-kategoria').textContent = clienteData.kategoria;
+                                    document.getElementById('cliente-kontador').textContent = clienteData.nu_kontador;
+                                    document.getElementById('cliente-details').style.display = 'block';
+                                } else {
+                                    document.getElementById('cliente-details').style.display = 'none';
+                                }
+                            });
+                            </script>
+                            <div class="form-group">
+                                <label for="montante">Montante Selu</label>
+                                <input type="number" class="form-control" id="montante" name="montante" step="0.01" readonly required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Salva</button>
+                            <a href="{% url 'app:pagamento' %}?act=show" class="btn btn-secondary">Kansela</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function getSurveyData(cliente){
+            $.ajax({
+                type: "GET",
+                url: "{% url 'app:getSurveyData' 1 %}",
+                success: function(data) {
+                    if (data['message'] === 'success') {
+                        document.getElementById('survey-tipu_ligasaun').textContent = data['data']['tipu_ligasaun'] || '';
+                        document.getElementById('survey-feeder').textContent = data['data']['feeder'] || '';
+                        document.getElementById('survey-nu_trafo').textContent = data['data']['nu_trafo'] || '';
+                        document.getElementById('survey-data_survey').textContent = data['data']['data_survey'] || '';
+                        document.getElementById('survey-tekniku').textContent = data['data']['tekniku'] || '';
+                        document.getElementById('montante').value = data['data']['montante'] || '';
+                    }
+                }
+            });
+        }
+    });
+
+
+    function getSurveyData(cliente){
+        $.ajax({
+            type: "GET",
+            url: "{% url 'app:getSurveyData' 1 %}",
+            success: function(data) {
+                if (data['message'] === 'success') {
+                    document.getElementById('survey-tipu_ligasaun').textContent = data['data']['tipu_ligasaun'] || '';
+                    document.getElementById('survey-feeder').textContent = data['data']['feeder'] || '';
+                    document.getElementById('survey-nu_trafo').textContent = data['data']['nu_trafo'] || '';
+                    document.getElementById('survey-data_survey').textContent = data['data']['data_survey'] || '';
+                    document.getElementById('survey-tekniku').textContent = data['data']['tekniku'] || '';
+                    document.getElementById('montante').value = data['data']['montante'] || '';
+                }
+            }
+        });
+    }
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{% static 'img/EDTL.png' %}">
+    <title>EDTL</title>
+
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&amp;display=fallback">
+
+    <!-- AdminLTE CSS -->
+    <link rel="stylesheet" href="{% static 'adminLTE/plugins/fontawesome-free/css/all.min.css' %}">
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="{% static 'adminLTE/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}">
+    <link rel="stylesheet" href="{% static 'adminLTE/plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'adminLTE/plugins/jqvmap/jqvmap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'adminLTE/dist/css/adminlte.min2167.css' %}">
+    <link rel="stylesheet" href="{% static 'adminLTE/plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}">
+    <link rel="stylesheet" href="{% static 'adminLTE/plugins/daterangepicker/daterangepicker.css' %}">
+    <link rel="stylesheet" href="{% static 'adminLTE/plugins/summernote/summernote-bs4.min.css' %}">
+    <link rel="stylesheet" href="{% static 'adminLTE/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+    <link rel="stylesheet" href="{% static 'adminLTE/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+    <link rel="stylesheet" href="{% static 'adminLTE/plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+    <div class="wrapper">
+
+        <!-- Header -->
+        {% include 'menu_include/header.html' %}
+
+        <!-- Sidebar -->
+        {% include 'menu_include/sidebar.html' %}
+
+        <!-- Content -->
+        <div class="content-wrapper">
+            {% block content %}
+            {% include 'main.html' %}
+            {% endblock %}
+        </div>
+
+        <!-- Footer -->
+        {% include 'menu_include/footer.html' %}
+
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark"></aside>
+
+    </div>
+
+    <!-- Custom Dropdown -->
+    <link rel="stylesheet" href="{% static 'select/fstdropdown.css' %}">
+    <script src="{% static 'select/fstdropdown.js' %}"></script>
+    <script>
+        function setDrop() {
+            if (!document.getElementById('third').classList.contains("fstdropdown-select"))
+                document.getElementById('third').className = 'fstdropdown-select';
+            setFstDropdown();
+        }
+        setFstDropdown();
+
+        function removeDrop() {
+            if (document.getElementById('third').classList.contains("fstdropdown-select")) {
+                document.getElementById('third').classList.remove('fstdropdown-select');
+                document.getElementById("third").fstdropdown.dd.remove();
+                document.querySelector("#third~.fstdiv").remove();
+            }
+        }
+
+        function addOptions(add) {
+            var select = document.getElementById("fourth");
+            for (var i = 0; i < add; i++) {
+                var opt = document.createElement("option");
+                var o = Array.from(document.getElementById("fourth").querySelectorAll("option")).slice(-1)[0];
+                var last = o == undefined ? 1 : Number(o.value) + 1;
+                opt.text = opt.value = last;
+                select.add(opt);
+            }
+        }
+
+        function removeOptions(remove) {
+            for (var i = 0; i < remove; i++) {
+                var last = Array.from(document.getElementById("fourth").querySelectorAll("option")).slice(-1)[0];
+                if (last == undefined)
+                    break;
+                Array.from(document.getElementById("fourth").querySelectorAll("option")).slice(-1)[0].remove();
+            }
+        }
+
+        function updateDrop() {
+            document.getElementById("fourth").fstdropdown.rebind();
+        }
+    </script>
+
+    <!-- jQuery -->
+    <script src="{% static 'adminLTE/plugins/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'adminLTE/plugins/jquery-ui/jquery-ui.min.js' %}"></script>
+    <script>
+        $.widget.bridge('uibutton', $.ui.button)
+    </script>
+
+    <!-- Bootstrap -->
+    <script src="{% static 'adminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+    <!-- Plugins -->
+    <script src="{% static 'adminLTE/plugins/chart.js/Chart.min.js' %}"></script>
+    <script src="{% static 'adminLTE/plugins/sparklines/sparkline.js' %}"></script>
+    <script src="{% static 'adminLTE/plugins/jqvmap/jquery.vmap.min.js' %}"></script>
+    <script src="{% static 'adminLTE/plugins/jqvmap/maps/jquery.vmap.usa.js' %}"></script>
+    <script src="{% static 'adminLTE/plugins/jquery-knob/jquery.knob.min.js' %}"></script>
+    <script src="{% static 'adminLTE/plugins/moment/moment.min.js' %}"></script>
+    <script src="{% static 'adminLTE/plugins/daterangepicker/daterangepicker.js' %}"></script>
+    <script src="{% static 'adminLTE/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+    <script src="{% static 'adminLTE/plugins/summernote/summernote-bs4.min.js' %}"></script>
+    <script src="{% static 'adminLTE/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+
+    <!-- AdminLTE App -->
+    <script src="{% static 'adminLTE/dist/js/adminlte2167.js?v=3.2.0' %}"></script>
+    <script src="{% static 'adminLTE/dist/js/pages/dashboard.js' %}"></script>
+
+    <!-- DataTables -->
+    <script src="{% static 'adminLTE/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'adminLTE/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'adminLTE/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'adminLTE/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'adminLTE/plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'adminLTE/plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+
+    <!-- DataTables Init -->
+    <script>
+    $(function () {
+        $("#example1").DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+        
+        $('#example2').DataTable({
+            "paging": true,
+            "lengthChange": false,
+            "searching": false,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "responsive": true,
+        });
+    });
+    </script>
+</body>
+</html>

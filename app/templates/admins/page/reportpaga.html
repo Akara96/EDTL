@@ -1,0 +1,131 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Nota Pagamento - EDTL</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            margin: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header img {
+            width: 100px;
+            height: 70px;
+        }
+        .section-title {
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        table td, table th {
+            border: 1px solid #000;
+            padding: 8px;
+        }
+        .no-border td {
+            border: none;
+            padding: 3px 0;
+        }
+        .right {
+            text-align: right;
+        }
+    </style>
+</head>
+<body onload="window.print();">
+<!-- <body> -->
+
+<div class="header">
+    <img src="{% static 'img/EDTL.png' %}"><br>
+    <div style="margin-top:10px;font-size:13px;">
+        <b>EDTL – Eletrisidade de Timor Leste</b><br>
+        Estrada de Balide, Caicoli, Dili, Phone: +670 3324507
+    </div>
+</div>
+
+<!-- =======================
+     Detalhes do Consumidor
+     ======================= -->
+<div class="section-title">Detalho do Consumidor</div>
+
+<table>
+    <tr>
+        <td width="25%">Nome do Consumidor</td>
+        <td width="35%">{{data.cliente}}</td>
+        <td width="15%">Telefone</td>
+        <td width="25%">{{data.cliente.no_tlf}}</td>
+    </tr>
+    <tr>
+        <td>Morada</td>
+        <td>{{data.cliente.hela_fatin}}</td>
+        <td>Fax</td>
+        <td>1141</td>
+    </tr>
+</table>
+
+<!-- =======================
+     Detalhes do Deskirasaun
+     ======================= -->
+<div class="section-title">Detalho do Deskrisaun</div>
+
+<table>
+    <tr>
+        <th>Tipo de Servico</th>
+        <th class="right">Valor (USD)</th>
+    </tr>
+    <tr>
+        <td>Taxa de Nova Ligacao Trifasico</td>
+        <td class="right">{{data.montante}}</td>
+    </tr>
+    <tr>
+        <td>Administracao Sela Banco</td>
+        <td class="right">1.00</td>
+    </tr>
+    <tr>
+        <td><b>Tipo do Consumidor: {{data.cliente.kategoria_kliente}}</b></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><b>Total do Pagamento</b></td>
+        <td class="right"><b>USD $ {{montanteselu}}</b></td>
+    </tr>
+</table>
+
+<!-- =======================
+     Payment Section
+     ======================= -->
+<div class="section-title">Detalhes de Pagamento</div>
+
+<table>
+    <tr>
+        <td width="25%">Banco Deposito : BNU</td>
+        <td width="50%">No. da Conta : 80374310001</td>
+        <td width="25%" class="right">Valor Montante: US $ {{montanteselu}}</td>
+    </tr>
+</table>
+
+<!-- =======================
+     Footer Boxes
+     ======================= -->
+<table>
+    <tr>
+        <td height="80px" width="50%">So para o uso do Trisuri:</td>
+        <td height="80px" width="50%">So para o uso do Banco:<br><br>Carimbo e Assinatura:</td>
+    </tr>
+</table>
+
+<div style="font-size:12px; margin-top:10px;">
+    Copia em Quadriplicado: BANCO, CONSUMIDOR, TRISURI & AUTORIDADE DE ELECTRICIDADE
+</div>
+
+</body>
+</html>

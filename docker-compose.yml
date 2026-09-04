@@ -1,0 +1,28 @@
+services:
+
+  web:
+    build: .
+    container_name: django_app
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    environment:
+      DB_HOST: 10.119.28.48
+
+  worker:
+    build: .
+    container_name: django_worker
+    command: python manage.py qcluster
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+    environment:
+      DB_HOST: 10.119.28.48
+
+  redis:
+    image: redis:7
+    container_name: redis_container

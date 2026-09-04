@@ -1,0 +1,1281 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>KONTADOR EDTL | Dashboard</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="{% static 'img/EDTL.png' %}" rel="icon">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- CSS Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.2" integrity="sha384-L6OqL9pRWyyFU3+/bjdSri+iIphTN/bvYyM37tICVyOJkWZLpP2vGn6VUEXgzg6h" crossorigin="anonymous"></script>
+
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #9b59b6;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .hero-section {
+            background: linear-gradient(rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.9)), url('{% static "img/hero.jpg" %}') center/cover no-repeat;
+            padding: 100px 0;
+            border-radius: 0 0 30px 30px;
+            margin-bottom: 50px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #3498db, #9b59b6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-elegant {
+            background: white;
+            border-radius: 20px;
+            border: none;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .card-elegant:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header-elegant {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 25px 30px;
+            border-radius: 20px 20px 0 0 !important;
+            border: none;
+        }
+
+        .card-header-elegant h3 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            padding: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            transition: var(--transition);
+            border-left: 5px solid var(--accent-color);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card i {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .table-elegant {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+
+        .table-elegant thead {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .table-elegant th {
+            border: none;
+            padding: 20px;
+            font-weight: 500;
+        }
+
+        .table-elegant td {
+            padding: 15px 20px;
+            vertical-align: middle;
+            border-color: #f1f3f4;
+        }
+
+        .table-elegant tbody tr:hover {
+            background-color: rgba(155, 89, 182, 0.05);
+        }
+
+        .form-control-elegant {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px 20px;
+            transition: var(--transition);
+        }
+
+        .form-control-elegant:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.2);
+        }
+
+        .btn-elegant {
+            background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            color: white;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-elegant:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(155, 89, 182, 0.3);
+            color: white;
+        }
+
+        .footer-elegant {
+            background: var(--primary-color);
+            color: white;
+            border-radius: 30px 30px 0 0;
+            margin-top: 100px;
+            padding: 50px 0 20px;
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+
+        .info-box:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(10px);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .feature-icon i {
+            font-size: 30px;
+            color: white;
+        }
+
+        .badge-elegant {
+            background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .progress-elegant {
+            height: 10px;
+            border-radius: 5px;
+            background-color: #e0e0e0;
+            overflow: hidden;
+        }
+
+        .progress-elegant-bar {
+            background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
+            height: 100%;
+            border-radius: 5px;
+        }
+
+        .animated {
+            animation-duration: 1s;
+            animation-fill-mode: both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fadeInUp {
+            animation-name: fadeInUp;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .stat-card {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="hero-title mb-3 animated fadeInUp">ELETRICIDADE DE TIMOR-LESTE</h1>
+                <p class="text-light fs-5 animated fadeInUp" style="animation-delay: 0.2s;">Portal Pedidu Rejistu Kontador EDTL, E.P</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Messages -->
+    {% if messages %}
+    <div class="row mb-4">
+        <div class="col-12">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-triangle{% endif %} me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Ganti menjadi: -->
+    <div class="row mb-5">
+        <div class="col-md-4 mb-4">
+            <div class="stat-card animated fadeInUp" style="animation-delay: 0.2s;">
+                <i class="fas fa-city"></i>
+                <div class="stat-number">{{ chart_labels|length }}</div>
+                <div class="stat-label">Total Munisipiu</div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="stat-card animated fadeInUp" style="animation-delay: 0.4s;">
+                <i class="fas fa-chart-line"></i>
+                <div class="stat-number">{{ max_value }}</div>
+                <div class="stat-label">Munisipiu ho Montajen Kontador Aas</div>
+                <small class="text-muted">{{ max_munisipiu }}</small>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="stat-card animated fadeInUp" style="animation-delay: 0.6s;">
+                <i class="fas fa-chart-bar"></i>
+                <div class="stat-number">{{ min_value }}</div>
+                <div class="stat-label">Munisipiu ho Montajen Kontador Kiik</div>
+                <small class="text-muted">{{ min_munisipiu }}</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card-elegant animated fadeInUp" style="animation-delay: 0.8s;">
+                <div class="card-header-elegant d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3><i class="fas fa-chart-bar me-2"></i>Grafiku Distribuisaun Kontador</h3>
+                        <p class="mb-0 text-light opacity-75">Kontador por Munisipiu iha Timor-Leste</p>
+                    </div>
+                    <span class="badge-elegant">Total {{ total_contador }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="myChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card-elegant animated fadeInUp" style="animation-delay: 1s;">
+                <div class="card-header-elegant">
+                    <h3><i class="fas fa-table me-2"></i>Detalhu Munisipiu</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-elegant table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Munisipiu</th>
+                                    <th>Kontador</th>
+                                    <th>Persentajen</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for m in munisipiu_data %}
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-city me-2 text-primary"></i>
+                                        <strong>{{ m.munisipiu }}</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary rounded-pill">{{ m.num_contadors }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="progress-elegant flex-grow-1 me-3">
+                                                <div class="progress-elegant-bar" 
+                                                     style="width: {% widthratio m.num_contadors total_contador 100 %}%"></div>
+                                            </div>
+                                            <span class="text-muted">{% widthratio m.num_contadors total_contador 100 %}%</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informasaun Kontador Section -->
+        <div class="col-lg-6">
+            <div class="card-elegant animated fadeInUp" style="animation-delay: 1.2s;">
+                <div class="card-header-elegant">
+                    <h3><i class="fas fa-info-circle me-2"></i>Informasaun Kontador Itron</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Gambar di atas - Full Width -->
+                        <div class="col-12 mb-5">
+                            <div class="text-center position-relative">
+                                <div class="meter-header mb-4">
+                                    <h4 class="text-primary mb-2"><i class="fas fa-tachometer-alt me-2"></i>KONTADOR ITRON - MODELU SMART METER</h4>
+                                    <p class="text-muted">Teknologia Moderna ba Monitorizasaun Konsumu Eletriku</p>
+                                </div>
+                                
+                                <div class="meter-image-wrapper" style="position: relative; display: inline-block; max-width: 500px;">
+                                    <img src="{% static 'img/itron.png' %}" alt="Itron Smart Meter" 
+                                        class="img-fluid meter-main-image" 
+                                        style="max-height: 350px; width: auto; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 3px solid white;">
+                                    
+                                    <!-- Annotations dengan garis -->
+                                    <div class="annotation-wrapper" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                                        <!-- Komponen 1 -->
+                                        <div class="annotation" style="position: absolute; top: 20%; right: 15%;">
+                                            <div class="annotation-line" style="position: absolute; width: 60px; height: 2px; background: #ff4757; right: -60px; top: 50%; transform: translateY(-50%);"></div>
+                                            <div class="annotation-marker" style="position: absolute; right: -70px; top: 50%; transform: translateY(-50%); width: 25px; height: 25px; background: #ff4757; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; box-shadow: 0 3px 6px rgba(255, 71, 87, 0.3);">
+                                                1
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Komponen 2 -->
+                                        <div class="annotation" style="position: absolute; top: 40%; right: 20%;">
+                                            <div class="annotation-line" style="position: absolute; width: 60px; height: 2px; background: #2ed573; right: -60px; top: 50%; transform: translateY(-50%);"></div>
+                                            <div class="annotation-marker" style="position: absolute; right: -70px; top: 50%; transform: translateY(-50%); width: 25px; height: 25px; background: #2ed573; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; box-shadow: 0 3px 6px rgba(46, 213, 115, 0.3);">
+                                                2
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Komponen 3 -->
+                                        <div class="annotation" style="position: absolute; top: 60%; right: 25%;">
+                                            <div class="annotation-line" style="position: absolute; width: 60px; height: 2px; background: #1e90ff; right: -60px; top: 50%; transform: translateY(-50%);"></div>
+                                            <div class="annotation-marker" style="position: absolute; right: -70px; top: 50%; transform: translateY(-50%); width: 25px; height: 25px; background: #1e90ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; box-shadow: 0 3px 6px rgba(30, 144, 255, 0.3);">
+                                                3
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Komponen 4 -->
+                                        <div class="annotation" style="position: absolute; top: 80%; right: 15%;">
+                                            <div class="annotation-line" style="position: absolute; width: 60px; height: 2px; background: #ffa502; right: -60px; top: 50%; transform: translateY(-50%);"></div>
+                                            <div class="annotation-marker" style="position: absolute; right: -70px; top: 50%; transform: translateY(-50%); width: 25px; height: 25px; background: #ffa502; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; box-shadow: 0 3px 6px rgba(255, 165, 2, 0.3);">
+                                                4
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Legend di bawah gambar -->
+                                <div class="legend-container mt-4">
+                                    <div class="row justify-content-center">
+                                        <div class="col-auto">
+                                            <div class="d-flex align-items-center">
+                                                <div class="legend-dot me-2" style="width: 16px; height: 16px; background: #ff4757; border-radius: 50%;"></div>
+                                                <span class="text-dark fw-medium">1. Serial Number</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="d-flex align-items-center">
+                                                <div class="legend-dot me-2" style="width: 16px; height: 16px; background: #2ed573; border-radius: 50%;"></div>
+                                                <span class="text-dark fw-medium">2. LED Indicator</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="d-flex align-items-center">
+                                                <div class="legend-dot me-2" style="width: 16px; height: 16px; background: #1e90ff; border-radius: 50%;"></div>
+                                                <span class="text-dark fw-medium">3. Optical Port</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="d-flex align-items-center">
+                                                <div class="legend-dot me-2" style="width: 16px; height: 16px; background: #ffa502; border-radius: 50%;"></div>
+                                                <span class="text-dark fw-medium">4. LCD Display</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Tabel di bawah gambar -->
+                        <div class="col-12">
+                            <div class="components-table-section" style="margin: 10px;">
+                                <h5 class="mb-4 text-primary border-bottom pb-2"><i class="fas fa-list-alt me-2"></i>Detalhu Komponente</h5>
+                                
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th width="10%" class="text-center">Nu</th>
+                                                <th width="25%">Komponente</th>
+                                                <th width="65%">Deskrisaun & Funksaun</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="component-item" data-component="1">
+                                                <td class="text-center">
+                                                    <div class="component-number" style="background: #ff4757; color: white; width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; box-shadow: 0 4px 8px rgba(255, 71, 87, 0.3);">
+                                                        1
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-1 fw-semibold">Numeru Serie Meter</h6>
+                                                    <small class="text-muted">Serial Number</small>
+                                                </td>
+                                                <td>
+                                                    <p class="mb-1">Identifikasaun úniku ba kontador sira-nia</p>
+                                                    <small class="text-muted d-block">
+                                                        <i class="fas fa-fingerprint text-primary me-1"></i>
+                                                        Úniku ba kada kontador, importante ba rejistu, monitorizasaun no servisu teknika.
+                                                    </small>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr class="component-item" data-component="2">
+                                                <td class="text-center">
+                                                    <div class="component-number" style="background: #2ed573; color: white; width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; box-shadow: 0 4px 8px rgba(46, 213, 115, 0.3);">
+                                                        2
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-1 fw-semibold">Indikador Kreditu LED</h6>
+                                                    <small class="text-muted">Credit Indicator LED</small>
+                                                </td>
+                                                <td>
+                                                    <p class="mb-1">Monitorizasaun kreditu elektriku restante</p>
+                                                    <small class="text-muted d-block">
+                                                        <i class="fas fa-lightbulb text-warning me-1"></i>
+                                                        LED nian kores metin se kreditu atu menus, alerta ba kliente atu halo top-up.
+                                                    </small>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr class="component-item" data-component="3">
+                                                <td class="text-center">
+                                                    <div class="component-number" style="background: #1e90ff; color: white; width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; box-shadow: 0 4px 8px rgba(30, 144, 255, 0.3);">
+                                                        3
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-1 fw-semibold">Optical Probe Port</h6>
+                                                    <small class="text-muted">Communication Port</small>
+                                                </td>
+                                                <td>
+                                                    <p class="mb-1">Portu komunikasaun ba teknisi EDTL</p>
+                                                    <small class="text-muted d-block">
+                                                        <i class="fas fa-wifi text-info me-1"></i>
+                                                        Uza ba leitura manual, konfigurasaun, no troubleshoot husi teknisi ho ekipamentu espesífiku.
+                                                    </small>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr class="component-item" data-component="4">
+                                                <td class="text-center">
+                                                    <div class="component-number" style="background: #ffa502; color: white; width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; box-shadow: 0 4px 8px rgba(255, 165, 2, 0.3);">
+                                                        4
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-1 fw-semibold">LCD Display Digital</h6>
+                                                    <small class="text-muted">Information Screen</small>
+                                                </td>
+                                                <td>
+                                                    <p class="mb-1">Tela informasaun digital ba kliente</p>
+                                                    <small class="text-muted d-block">
+                                                        <i class="fas fa-tv text-success me-1"></i>
+                                                        Hatudu informasaun importante: kreditu restante, konsumu oras ne'e, voltajen, tempu, no alarme sira.
+                                                    </small>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <!-- Informasi tambahan -->
+                                <div class="alert alert-light border mt-4" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+                                    <div class="d-flex">
+                                        <div class="flex-shrink-0">
+                                            <i class="fas fa-info-circle fa-2x text-primary"></i>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h6 class="alert-heading mb-2">Informasaun Teknika</h6>
+                                            <p class="mb-2" style="font-size: 0.95rem;">
+                                                Kontador Itron ne'e utiliza teknologia <strong>Smart Metering</strong> ho kapasidade ba:
+                                            </p>
+                                            <ul class="mb-0" style="font-size: 0.9rem;">
+                                                <li>Monitorizasaun konsumu iha tempo real</li>
+                                                <li>Komunikasaun ho sentrál EDTL nian</li>
+                                                <li>Deteksaun anomália no falha</li>
+                                                <li>Sistema seguransa boot kontra manipulasaun</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <style>
+                    .meter-main-image {
+                        transition: transform 0.3s ease, box-shadow 0.3s ease;
+                    }
+                    
+                    .meter-main-image:hover {
+                        transform: scale(1.02);
+                        box-shadow: 0 15px 40px rgba(0,0,0,0.25) !important;
+                    }
+                    
+                    .annotation-line {
+                        transition: all 0.3s ease;
+                    }
+                    
+                    .annotation-marker {
+                        transition: all 0.3s ease;
+                        cursor: pointer;
+                        pointer-events: auto;
+                    }
+                    
+                    .annotation-marker:hover {
+                        transform: translateY(-50%) scale(1.2);
+                        box-shadow: 0 5px 15px rgba(0,0,0,0.3) !important;
+                    }
+                    
+                    .component-item {
+                        transition: all 0.3s ease;
+                        border-left: 3px solid transparent;
+                    }
+                    
+                    .component-item:hover {
+                        background-color: rgba(155, 89, 182, 0.08);
+                        border-left: 3px solid var(--accent-color);
+                        transform: translateX(5px);
+                    }
+                    
+                    .component-number {
+                        transition: all 0.3s ease;
+                    }
+                    
+                    .component-item:hover .component-number {
+                        transform: scale(1.1) rotate(5deg);
+                    }
+                    
+                    .legend-dot {
+                        transition: transform 0.3s ease;
+                        display: inline-block;
+                    }
+                    
+                    .legend-dot:hover {
+                        transform: scale(1.3);
+                    }
+                    
+                    .components-table-section {
+                        animation: fadeInUp 0.6s ease;
+                    }
+                    
+                    @keyframes fadeInUp {
+                        from {
+                            opacity: 0;
+                            transform: translateY(20px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
+                    }
+                </style>
+
+                <script>
+                // Interaktivitas antara gambar dan tabel
+                document.addEventListener('DOMContentLoaded', function() {
+                    const markers = document.querySelectorAll('.annotation-marker');
+                    const componentItems = document.querySelectorAll('.component-item');
+                    
+                    // Highlight tabel ketika hover marker di gambar
+                    markers.forEach(marker => {
+                        marker.addEventListener('mouseenter', function() {
+                            const componentNum = this.textContent.trim();
+                            const item = document.querySelector(`.component-item[data-component="${componentNum}"]`);
+                            if (item) {
+                                item.classList.add('table-active');
+                                item.style.backgroundColor = 'rgba(155, 89, 182, 0.12)';
+                                
+                                // Animasikan garis
+                                const line = this.parentElement.querySelector('.annotation-line');
+                                if (line) {
+                                    line.style.width = '80px';
+                                    line.style.height = '3px';
+                                }
+                            }
+                        });
+                        
+                        marker.addEventListener('mouseleave', function() {
+                            const componentNum = this.textContent.trim();
+                            const item = document.querySelector(`.component-item[data-component="${componentNum}"]`);
+                            if (item) {
+                                item.classList.remove('table-active');
+                                item.style.backgroundColor = '';
+                                
+                                // Reset animasi garis
+                                const line = this.parentElement.querySelector('.annotation-line');
+                                if (line) {
+                                    line.style.width = '60px';
+                                    line.style.height = '2px';
+                                }
+                            }
+                        });
+                        
+                        // Klik marker untuk scroll ke komponen terkait
+                        marker.addEventListener('click', function() {
+                            const componentNum = this.textContent.trim();
+                            const item = document.querySelector(`.component-item[data-component="${componentNum}"]`);
+                            if (item) {
+                                item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                
+                                // Highlight sementara
+                                item.style.backgroundColor = 'rgba(155, 89, 182, 0.2)';
+                                setTimeout(() => {
+                                    if (!item.classList.contains('table-active')) {
+                                        item.style.backgroundColor = '';
+                                    }
+                                }, 1500);
+                            }
+                        });
+                    });
+                    
+                    // Highlight marker ketika hover tabel
+                    componentItems.forEach(item => {
+                        item.addEventListener('mouseenter', function() {
+                            const componentNum = this.getAttribute('data-component');
+                            const marker = document.querySelector(`.annotation-marker:contains("${componentNum}")`);
+                            if (marker) {
+                                marker.style.transform = 'translateY(-50%) scale(1.3)';
+                                marker.style.boxShadow = '0 0 0 5px rgba(155, 89, 182, 0.2), 0 5px 15px rgba(0,0,0,0.3)';
+                                
+                                // Animasikan angka di tabel
+                                const number = this.querySelector('.component-number');
+                                if (number) {
+                                    number.style.transform = 'scale(1.2) rotate(10deg)';
+                                }
+                            }
+                        });
+                        
+                        item.addEventListener('mouseleave', function() {
+                            const componentNum = this.getAttribute('data-component');
+                            const marker = document.querySelector(`.annotation-marker:contains("${componentNum}")`);
+                            if (marker) {
+                                marker.style.transform = 'translateY(-50%) scale(1)';
+                                marker.style.boxShadow = '0 3px 6px rgba(0,0,0,0.3)';
+                                
+                                // Reset animasi angka
+                                const number = this.querySelector('.component-number');
+                                if (number) {
+                                    number.style.transform = '';
+                                }
+                            }
+                        });
+                    });
+                    
+                    // Animasi sequential untuk rows
+                    componentItems.forEach((item, index) => {
+                        item.style.animationDelay = `${index * 0.1}s`;
+                        item.classList.add('animated', 'fadeInRight');
+                    });
+                });
+                </script>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Form -->
+    <div id="rejistu-section" class="row mb-5">
+        <div class="col-12">
+            <div class="card-elegant animated fadeInUp" style="animation-delay: 1.4s;">
+                <div class="card-header-elegant">
+                    <h3><i class="fas fa-user-plus me-2"></i>Rejistu Kontador Foun</h3>
+                </div>
+                <div class="card-body" style="margin: 20px;">
+                    <div class="row">
+                        <div class="col-lg-6 mb-4 mb-lg-0">
+                            <h4 class="text-primary mb-3">Ita-nia Direitu ba Elektrisidade</h4>
+                            <p class="text-muted mb-4">EDTL fo servisu eletrisidade ne'ebé konfiável no seguru ba komunidade tomak. Rejistu kontador foun agora mesmu.</p>
+                            
+                            <div class="info-box mb-3">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <span>Prosesu simplifikadu no lalais</span>
+                            </div>
+                            <div class="info-box mb-3">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <span>Suporta teknika disponível 24/7</span>
+                            </div>
+                            <div class="info-box">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <span>Monitorizasaun online ba konsumu</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6">
+                            <div id="form-response"></div>
+                            <form id="kontadorForm" method="POST" enctype="multipart/form-data" action="">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label">Naran Kliente</label>
+                                    <input type="text" name="naran" class="form-control form-control-elegant" placeholder="Naran kompletu" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Numeru Kontaktu</label>
+                                    <input type="text" name="numeru" class="form-control form-control-elegant" placeholder="Numeru telefone" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" name="email" class="form-control form-control-elegant" placeholder="Email válidu" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Aldeia</label>
+                                    <select class="form-select form-control-elegant" name="aldeia" required>
+                                        <option selected disabled>--Hili Aldeia--</option>
+                                        {% for item in data %}
+                                        <option value="{{ item.id }}">{{ item.naran_aldeia }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <button class="btn btn-elegant w-100 py-3" type="submit">
+                                    <i class="fas fa-paper-plane me-2"></i>Submete Formuláriu
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer-elegant">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <h4 class="mb-4">KONTAKTU</h4>
+                <div class="info-box">
+                    <i class="fas fa-map-marker-alt me-3"></i>
+                    <span>1⁰ Andar Edifício de Caicoli, Dili</span>
+                </div>
+                <div class="info-box">
+                    <i class="fas fa-envelope me-3"></i>
+                    <span>info@edtl-ep.tl</span>
+                </div>
+                <div class="info-box">
+                    <i class="fas fa-phone me-3"></i>
+                    <span>8001000 / 3339258</span>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <h4 class="mb-4">HORÁRIU ATENDIMENTU</h4>
+                <div class="info-box">
+                    <i class="fas fa-clock me-3"></i>
+                    <span>Segunda - Sexta: 08:00 - 17:00</span>
+                </div>
+                <div class="info-box">
+                    <i class="fas fa-clock me-3"></i>
+                    <span>Sábado: 08:00 - 12:00</span>
+                </div>
+                <div class="info-box">
+                    <i class="fas fa-door-closed me-3"></i>
+                    <span>Domingu: Laiha atendimentu</span>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <h4 class="mb-4">PARTNER</h4>
+                <div class="text-center">
+                    <img src="{% static 'img/itron.png' %}" alt="Itron" class="img-fluid mb-3" style="max-height: 50px;">
+                    <p class="text-light opacity-75">Teknologia Moderna ba Jestaun Energia</p>
+                </div>
+            </div>
+        </div>
+        <hr class="my-4 opacity-25">
+        <div class="row">
+            <div class="col-md-6 text-center text-md-start">
+                <p class="mb-0">&copy; 2025 Engenharia Informática UNTL. Direitu hotu reservadu.</p>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <p class="mb-0">Desenvolvido ho <i class="fas fa-heart text-danger"></i> ba EDTL</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Data from Django
+const chartLabels = {{ chart_labels|safe }};
+const chartData = {{ chart_data|safe }};
+const totalContador = {{ total_contador }};
+
+// Generate dynamic colors
+function generateColors() {
+    const colors = [];
+    for (let i = 0; i < chartLabels.length; i++) {
+        const hue = (i * 137.508) % 360; // Golden angle approximation
+        colors.push(`hsla(${hue}, 70%, 60%, 0.7)`);
+        colors.push(`hsla(${hue}, 70%, 50%, 1)`);
+    }
+    return colors;
+}
+
+// Initialize Chart
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const colors = generateColors();
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: chartLabels,
+            datasets: [{
+                label: 'Kontador por Munisipiu',
+                data: chartData,
+                backgroundColor: colors.slice(0, chartLabels.length),
+                borderColor: colors.slice(chartLabels.length),
+                borderWidth: 2,
+                borderRadius: 8,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    padding: 12,
+                    cornerRadius: 6,
+                    callbacks: {
+                        label: function(context) {
+                            const percentage = ((context.parsed.y / totalContador) * 100).toFixed(1);
+                            return `${context.parsed.y} kontador (${percentage}%)`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        stepSize: Math.max(1, Math.ceil(Math.max(...chartData) / 10)),
+                        font: {
+                            size: 12
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Total Kontador',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        font: {
+                            size: 12
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Munisipiu',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    }
+                }
+            },
+            animation: {
+                duration: 2000,
+                easing: 'easeOutQuart'
+            }
+        }
+    });
+
+    // Add animation to cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Animate all cards
+    document.querySelectorAll('.animated').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(card);
+    });
+});
+
+// Form submission with HTMX
+document.getElementById('kontadorForm')?.addEventListener('submit', function(e) {
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Prosesando...';
+    submitBtn.disabled = true;
+    
+    setTimeout(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }, 3000);
+});
+</script>
+<!-- Keixa Assistant Chatbot Widget -->
+<div id="keixa-chatbot-widget" class="chatbot-widget">
+    <div id="chatbot-toggle" class="chatbot-toggle" onclick="toggleChatbot()">
+        <i class="fas fa-comment-dots"></i>
+    </div>
+    <div id="chatbot-window" class="chatbot-window" style="display: none;">
+        <div class="chatbot-header">
+            <div>
+                <i class="fas fa-robot me-2"></i>Asistente EDTL
+            </div>
+            <i class="fas fa-times cursor-pointer" onclick="toggleChatbot()"></i>
+        </div>
+        <div id="chatbot-messages" class="chatbot-messages">
+            <div class="message bot-message">
+                Bóndia! Ha'u mak Asistente EDTL. Hili opsaun iha kraik ne'e atu hahú:
+                <div class="mt-3">
+                    <button class="btn btn-sm text-start w-100 mb-2 p-2" style="background: var(--secondary-color); color: white; border-radius: 10px; font-weight: 500;" onclick="window.location.href='#rejistu-section'; toggleChatbot();">1. Rejistu Kontador Foun</button>
+                    <button class="btn btn-sm text-start w-100 p-2" style="background: var(--accent-color); color: white; border-radius: 10px; font-weight: 500;" onclick="window.location.href='/keixa/'">2. Reklamasaun ka Keixa</button>
+                </div>
+            </div>
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="chatbot-input-field" placeholder="Hakerek ita-nia kestaun..." onkeypress="handleChatKeyPress(event)">
+            <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Chatbot Styles */
+.chatbot-widget {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+    font-family: 'Poppins', sans-serif;
+}
+.chatbot-toggle {
+    width: 65px;
+    height: 65px;
+    background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+    transition: transform 0.3s ease;
+}
+.chatbot-toggle:hover {
+    transform: scale(1.1);
+}
+.chatbot-window {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    width: 350px;
+    height: 500px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: fadeInUp 0.3s ease;
+}
+.chatbot-header {
+    background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+}
+.chatbot-messages {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #f8f9fa;
+}
+.message {
+    max-width: 80%;
+    padding: 10px 15px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+.bot-message {
+    background: #e9ecef;
+    color: #333;
+    align-self: flex-start;
+    border-bottom-left-radius: 5px;
+}
+.user-message {
+    background: var(--secondary-color);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 5px;
+}
+.chatbot-input {
+    display: flex;
+    padding: 15px;
+    background: white;
+    border-top: 1px solid #eee;
+}
+.chatbot-input input {
+    flex-grow: 1;
+    border: 1px solid #ddd;
+    padding: 10px 15px;
+    border-radius: 20px;
+    outline: none;
+}
+.chatbot-input input:focus {
+    border-color: var(--secondary-color);
+}
+.chatbot-input button {
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.chatbot-input button:hover {
+    background: var(--accent-color);
+}
+.cursor-pointer {
+    cursor: pointer;
+}
+.typing-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.typing-indicator span {
+    width: 6px;
+    height: 6px;
+    background: #888;
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out both;
+}
+.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+@keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+}
+</style>
+
+<script>
+function toggleChatbot() {
+    const window = document.getElementById('chatbot-window');
+    if (window.style.display === 'none') {
+        window.style.display = 'flex';
+    } else {
+        window.style.display = 'none';
+    }
+}
+
+function handleChatKeyPress(event) {
+    if (event.key === 'Enter') {
+        sendChatMessage();
+    }
+}
+
+function appendMessage(text, isUser) {
+    const msgs = document.getElementById('chatbot-messages');
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'message ' + (isUser ? 'user-message' : 'bot-message');
+    // Convert links to clickable HTML (basic regex)
+    const formattedText = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color: inherit; text-decoration: underline;">$1</a>');
+    msgDiv.innerHTML = formattedText;
+    msgs.appendChild(msgDiv);
+    msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTypingIndicator() {
+    const msgs = document.getElementById('chatbot-messages');
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'message bot-message typing-indicator-container';
+    msgDiv.id = 'typing-indicator';
+    msgDiv.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+    msgs.appendChild(msgDiv);
+    msgs.scrollTop = msgs.scrollHeight;
+}
+
+function hideTypingIndicator() {
+    const indicator = document.getElementById('typing-indicator');
+    if (indicator) {
+        indicator.remove();
+    }
+}
+
+function sendChatMessage() {
+    const input = document.getElementById('chatbot-input-field');
+    const message = input.value.trim();
+    if (!message) return;
+    
+    // Disable input while processing
+    input.value = '';
+    input.disabled = true;
+    
+    appendMessage(message, true);
+    showTypingIndicator();
+    
+    fetch('/api/public-chat/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ message: message })
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideTypingIndicator();
+        input.disabled = false;
+        input.focus();
+        
+        if (data.error) {
+            appendMessage("Deskulpa, iha erru ruma: " + data.error, false);
+        } else if (data.response) {
+            appendMessage(data.response, false);
+        }
+    })
+    .catch(error => {
+        hideTypingIndicator();
+        input.disabled = false;
+        appendMessage("Deskulpa, labele konekta ba servidór.", false);
+        console.error('Error:', error);
+    });
+}
+</script>
+</body>
+</html>

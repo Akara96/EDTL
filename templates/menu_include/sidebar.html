@@ -1,0 +1,301 @@
+{% load static %}
+<style>
+    .custom-sidebar {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
+        box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .custom-brand-link {
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    /* .custom-brand-link::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: left 0.5s;
+    } */
+    
+    .custom-brand-link:hover::before {
+        left: 100%;
+    }
+    
+    .custom-brand-link:hover {
+        background: rgba(255,255,255,0.15);
+        text-decoration: none;
+    }
+    
+    .brand-image-custom {
+        border: 3px solid rgba(255,255,255,0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .custom-brand-link:hover .brand-image-custom {
+        border-color: rgba(255,255,255,0.6);
+        transform: rotate(360deg);
+    }
+    
+    .brand-text-custom {
+        background: linear-gradient(45deg, #3498db, #2ecc71, #e74c3c, #f39c12);
+        background-size: 300% 300%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: gradientShift 3s ease-in-out infinite;
+        font-weight: bold;
+        font-size: 1.2em;
+        text-shadow: 0 0 10px rgba(255,255,255,0.3);
+    }
+    
+    @keyframes gradientShift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+    
+    .nav-header-custom {
+        color: #bdc3c7;
+        font-weight: bold;
+        font-size: 0.9em;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 15px 20px 8px;
+        position: relative;
+    }
+    
+    .nav-header-custom::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 20px;
+        right: 20px;
+        height: 2px;
+        background: linear-gradient(90deg, #3498db, #2ecc71);
+        border-radius: 1px;
+    }
+    
+    .nav-link-custom {
+        color: #ecf0f1 !important;
+        padding: 12px 20px;
+        margin: 2px 8px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .nav-link-custom::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 0;
+        height: 100%;
+        background: linear-gradient(90deg, #3498db, #2ecc71);
+        transition: width 0.3s ease;
+        z-index: 0;
+    }
+    
+    .nav-link-custom:hover::before {
+        width: 4px;
+    }
+    
+    .nav-link-custom:hover {
+        background: rgba(255,255,255,0.1);
+        color: #ffffff !important;
+        transform: translateX(5px);
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+    }
+    
+    .nav-link-custom.active {
+        background: linear-gradient(90deg, rgba(52, 152, 219, 0.8), rgba(46, 204, 113, 0.8));
+        color: #ffffff !important;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        transform: translateX(3px);
+    }
+    
+    .nav-link-custom.active::before {
+        width: 4px;
+        background: #ffffff;
+    }
+    
+    .nav-icon-custom {
+        width: 20px;
+        text-align: center;
+        margin-right: 10px;
+        transition: all 0.3s ease;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .nav-link-custom:hover .nav-icon-custom {
+        transform: scale(1.2);
+        text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+    
+    .nav-text-custom {
+        position: relative;
+        z-index: 1;
+        font-weight: 500;
+    }
+    
+    .sidebar-custom {
+        padding-top: 10px;
+    }
+    
+    .nav-pills-custom .nav-item {
+        margin-bottom: 2px;
+    }
+</style>
+
+<aside class="main-sidebar sidebar-dark-secondary elevation-4 custom-sidebar">
+    <a href="{% url 'app:home' %}" class="brand-link custom-brand-link">
+        <img src="{% static 'img/EDTL.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3 brand-image-custom" style="opacity: .9">
+        <span class="brand-text font-weight-light brand-text-custom">BO SJRK</span>
+    </a>
+    <div class="sidebar">
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                <li class="nav-header">Menu</li>
+                {% for group in request.user.groups.all %}
+                {% if group.name == "admin" %}
+                <li class="nav-item">
+                    <a href="{% url 'app:home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                        <i class="nav-icon fas fa-home"></i>
+                        <p>
+                            Varanda
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'app:user' %}" class="nav-link {% if request.resolver_match.url_name == 'user' %}active{% endif %}">
+                        <i class="nav-icon far fa-user"></i>
+                        <p>
+                            Utilizador
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'app:munisipiu' %}" class="nav-link {% if request.resolver_match.url_name == 'munisipiu' %}active{% endif %}">
+                        <i class="nav-icon fas fa-code-branch"></i>
+                        <p>
+                            Munisipiu
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'app:tekniku' %}" class="nav-link {% if request.resolver_match.url_name == 'tekniku' %}active{% endif %}">
+                        <i class="nav-icon fas fa-user-tie"></i>
+                        <p>
+                            Tekniku
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'app:kliente' %}" class="nav-link {% if request.resolver_match.url_name == 'kliente' or request.resolver_match.url_name == 'kliente/pedidu' %}active{% endif %}">
+                        <i class="nav-icon fas fa-user-friends"></i>
+                        <p>
+                            Kliente <span class="badge badge-danger" id="kliente-count"></span>
+                        </p>
+                    </a>
+                </li>
+                <script src="{% static 'adminLTE/plugins/jquery/jquery.min.js' %}"></script>
+                <script>
+                $(document).ready(function() {
+                    $.ajax({
+                        url: '{% url "app:pediducount" %}',
+                        type: 'GET',
+                        success: function(data) {
+                            if (data.count == 0) {
+                                $('#kliente-count').text('');
+                            } else {
+                                $('#kliente-count').text(data.count);
+                                // var audio = new Audio('{% static "sounds/bell.mp3" %}');
+                                // audio.play();
+                            }
+                        },
+                        error: function() {
+                            $('#kliente-count').text('');
+                        }
+                    });
+                });
+                </script>
+                <li class="nav-item">
+                    <a href="{% url 'app:feeder' %}" class="nav-link {% if request.resolver_match.url_name == 'feeder' or request.resolver_match.url_name == 'ligasaunFeeder' or request.resolver_match.url_name == 'trafo' %}active{% endif %}">
+                        <i class="nav-icon fas fa-bolt"></i>
+                        <p>
+                            Feeder
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'app:kontador' %}" class="nav-link {% if request.resolver_match.url_name == 'kontador' %}active{% endif %}">
+                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <p>
+                            Kontador
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'app:pagamento' %}" class="nav-link {% if request.resolver_match.url_name == 'pagamento' %}active{% endif %}">
+                        <i class="nav-icon fas fa-money-bill-wave"></i>
+                        <p>
+                            Pagamento
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-header">Seluk</li>
+                <li class="nav-item">
+                    <a href="{% url 'app:relatoriu' %}" class="nav-link {% if request.resolver_match.url_name == 'relatoriu' %}active{% endif %}">
+                        <i class="nav-icon fas fa-print"></i>
+                        <p>Relatoriu</p>
+                    </a>
+                </li>
+                {% elif group.name == "administrasaun" %}
+                <li class="nav-item">
+                    <a href="{% url 'app:home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                        <i class="nav-icon fas fa-home"></i>
+                        <p>
+                            Varanda
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'app:tekniku' %}" class="nav-link {% if request.resolver_match.url_name == 'tekniku' %}active{% endif %}">
+                        <i class="nav-icon fas fa-user-tie"></i>
+                        <p>
+                            Tekniku
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'app:kliente' %}" class="nav-link {% if request.resolver_match.url_name == 'kliente' or request.resolver_match.url_name == 'kliente/pedidu' %}active{% endif %}">
+                        <i class="nav-icon fas fa-user-friends"></i>
+                        <p>
+                            Kliente
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'app:pagamento' %}" class="nav-link {% if request.resolver_match.url_name == 'pagamento' %}active{% endif %}">
+                        <i class="nav-icon fas fa-money-bill-wave"></i>
+                        <p>
+                            Pagamento
+                        </p>
+                    </a>
+                </li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+        </nav>
+    </div>
+</aside>

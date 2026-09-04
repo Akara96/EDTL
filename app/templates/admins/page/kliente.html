@@ -1,0 +1,402 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block extra_css %}
+{% endblock %}
+{% block content %}
+{% if act == 'show' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Kliente</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item active">Kliente</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Tabs -->
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <ul class="nav nav-tabs nav-fill bg-light" id="custom-content-above-tab" role="tablist" style="overflow:hidden;">
+                            <li class="nav-item" style="margin-right: 5px;">
+                                <a class="nav-link {% if tab == 'klientepedidu' %}active{% endif %}" 
+                                   href="{% url 'app:klientePedidu' %}" 
+                                   role="tab" 
+                                   aria-selected="{% if tab == 'klientepedidu' %}true{% else %}false{% endif %}">
+                                    <i class="fas fa-user"></i> Kliente Pedidu <span class="badge badge-danger" id="kliente-counts"></span>
+                                </a>
+                            </li>
+                            <script src="{% static 'adminLTE/plugins/jquery/jquery.min.js' %}"></script>
+                            <script>
+                            $(document).ready(function() {
+                                $.ajax({
+                                    url: '{% url "app:pediducount" %}',
+                                    type: 'GET',
+                                    success: function(data) {
+                                        if (data.count == 0) {
+                                            $('#kliente-counts').text('');
+                                        } else {
+                                            $('#kliente-counts').text(data.count);
+                                        }
+                                    },
+                                    error: function() {
+                                        $('#kliente-counts').text('');
+                                    }
+                                });
+                            });
+                            </script>
+                            <li class="nav-item"></li>
+                                <a class="nav-link {% if tab == 'klientefinal' %}active{% endif %}" 
+                                   href="{% url 'app:klienteFinal' %}" 
+                                   role="tab" 
+                                   aria-selected="{% if tab == 'klientefinal' %}true{% else %}false{% endif %}">
+                                    <i class="fas fa-user"></i> Kliente Final
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3"></div>
+                        <div class="tab-content" id="custom-content-above-tabContent">
+                            {% if tab == 'klientepedidu' %}
+                                {% include 'admins/tab/tab_klientepedidu.html' %}
+                            {% elif tab == 'klientefinal' %}
+                                {% include 'admins/tab/tab_klientefinal.html' %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% elif act == 'send' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Kliente</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'app:kliente' %}">Kliente</a></li>
+                    <li class="breadcrumb-item active">Formulariu Haruka Email</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-envelope"></i>
+                        <h3 class="card-title mb-0">Formulariu Manda Email ba Kliente</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if message %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                        {% endif %}
+                        <form action="" method="post" autocomplete="off">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Kliente:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-id-card"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="Prienxe Kliente"
+                                        name="email" autocomplete="off" required value="{{kliente.email}}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Mensajen:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-id-card"></i></span>
+                                    </div>
+                                    <textarea class="form-control" placeholder="Prienxe Mensajen" name="mensajen" rows="4" required></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary float-left">
+                                    <i class="fas fa-save"></i> Submete
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% elif act == 'editklientefinal' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Kliente Final</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'app:klienteFinal' %}">Kliente Final</a></li>
+                    <li class="breadcrumb-item active">Formulariu Atualiza</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-users mr-1"></i>
+                        <h3 class="card-title mb-0">Formulariu Atualiza Kliente Final</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if message %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                        {% endif %}
+                        <form action="" method="post" autocomplete="off">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Naran:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-id-card"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control"
+                                           name="naran" maxlength="10" autocomplete="off"
+                                           value="{{ dadus.naran }}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Id Identidade:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-user"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" name="id_identidade" maxlength="50"
+                                           value="{{ dadus.id_identidade }}" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Naran Kompanhia:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-building"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" name="naran_kompanhia" maxlength="25"
+                                           value="{{ dadus.naran_kompanhia }}" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Kategoria Kliente:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-tags"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" name="kategoria_kliente" maxlength="50"
+                                           value="{{ dadus.kategoria_kliente }}" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Hela Fatin:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-map-marker-alt"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" name="hela_fatin" maxlength="8"
+                                           value="{{ dadus.hela_fatin }}" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Numeru Telefone:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-phone"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" name="no_tlf" maxlength="8"
+                                           value="{{ dadus.no_tlf }}" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Aldeia:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-map-marker-alt"></i></span>
+                                    </div>
+                                    <select class="form-control" name="aldeia" required>
+                                        <option value="">Hili Aldeia</option>
+                                        {% for aldeia in aldeias %}
+                                            <option value="{{ aldeia.id }}" {% if dadus.aldeia.id == aldeia.id %}selected{% endif %}>
+                                                {{ aldeia.naran_aldeia }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary float-left">
+                                    <i class="fas fa-save"></i> Atualiza
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% elif act == 'klientekontador' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Kontador</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'app:klienteFinal' %}">Kliente Final</a></li>
+                    <li class="breadcrumb-item active">Kontador</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-table"></i>
+                        <h3 class="card-title mb-0">Dadus Kontador</h3>
+                    </div>
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <ul class="nav nav-tabs nav-fill bg-light" id="custom-content-above-tab" role="tablist" style="overflow:hidden;">
+                                <li class="nav-item" style="margin-right: 5px;">
+                                    <a class="nav-link {% if request.GET.tab == 'tab_kondadus' or not request.GET.tab %}active{% endif %}" href="{% url 'app:klientefinalKontador' id %}?tab=tab_kondadus" role="tab" aria-selected="{% if request.GET.tab == 'tab_mundadus' or not request.GET.tab %}true{% else %}false{% endif %}">
+                                        <i class="fas fa-table"></i> Dadus Tabular
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {% if request.GET.tab == 'tab_konmapa' %}active{% endif %}" href="{% url 'app:klientefinalKontador' id %}?tab=tab_konmapa" role="tab" aria-selected="{% if request.GET.tab == 'tab_konmapa' %}true{% else %}false{% endif %}">
+                                        <i class="fas fa-map-marked-alt"></i> Mapa
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="tab-content" id="custom-content-above-tabContent">
+                            {% if request.GET.tab == 'tab_kondadus' or not request.GET.tab %}
+                                {% include 'admins/tab/kontadordadus.html' %}
+                            {% elif request.GET.tab == 'tab_konmapa' %}
+                                {% include 'admins/tab/kontadormapa.html' %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% elif act == 'klientekontadorimajen' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Kontador Imajen</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'app:klienteFinal' %}">Kliente Final</a></li>
+                    <li class="breadcrumb-item active">Kontador Imajen</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-images"></i>
+                        <h3 class="card-title mb-0">Imajen Kontador</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                        <div class="row">
+                            {% for imajen in imajens %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card">
+                                    <img src="{{ imajen.foto.url }}" class="card-img-top" alt="Imajen Kontador" style="object-fit: cover; height: 200px;">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ imajen.title }}</h5>
+                                        <p class="card-text">{{ imajen.description }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="col-12">
+                                <p class="text-center">La iha imajen disponivel.</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+
+{% endblock %}

@@ -1,0 +1,353 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block content %}
+{% if act == 'show' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Relatoriu</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item active">Relatoriu</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-table"></i>
+                        <h3 class="card-title mb-0">Formulariu Relatoriu</h3>
+                    </div>
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    <div class="card-body">
+                        <div class="form-group">
+                            <div class="col-12">
+                                <div id="formError" class="alert alert-danger mt-2" style="display:none;"></div>
+                            </div>
+                            <form id="relatoriuForm" method="POST" action="{% url 'app:imprimeRelatoriu' %}" class="row g-3 align-items-end" target="_blank">
+                            {% csrf_token %}
+                            <div class="col-md-4">
+                                <label class="form-label">Munisipiu</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-code-branch"></i></span>
+                                    </div>
+                                    <select name="munisipiu" id="munisipiu" class="form-control">
+                                        <option value="Hotu">Hotu</option>
+                                        {% for dadus in munisipius %}
+                                        <option value="{{ dadus.id }}">{{ dadus.munisipiu }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label class="form-label">Feeder</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    </div>
+                                    <select name="feeder" id="feeder" class="form-control">
+                                        <option value="">Hotu</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label class="form-label">Trafo</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-exchange-alt"></i></span>
+                                    </div>
+                                    <select name="trafo" id="trafo" class="form-control">
+                                        <option value="">Hotu</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label class="form-label">Contador</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-tachometer-alt"></i></span>
+                                    </div>
+                                    <select name="contador" id="contador" class="form-control">
+                                        <option value="">Hotu</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="data_remata" class="form-label">Tinan</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                    </div>
+                                    <select name="tinan" id="tinan" class="form-control">
+                                        <option value="">Hotu</option>
+                                        {% for year in years %}
+                                        <option value="{{ year }}" {% if request.GET.tinan == year|stringformat:"s" %}selected{% endif %}>{{ year }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="data_remata" class="form-label">Fulan</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                    </div>
+                                    <select name="fulan" id="fulan" class="form-control">
+                                        <option value="">Hotu</option>
+                                        {% for month in months %}
+                                        <option value="{{ month.value }}" {% if request.GET.fulan == month.value|stringformat:"s" %}selected{% endif %}>{{ month.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="d-flex gap-2 mt-3">
+                                    <button type="submit" class="btn btn-primary" value="imprime" name="button">
+                                        <i class="nav-icon fas fa-print"></i> Print
+                                    </button>
+                                    <!-- &nbsp;
+                                    <button type="submit" class="btn btn-success" value="excel" name="button">
+                                        <i class="nav-icon fas fa-file-excel"></i> Excel
+                                    </button> -->
+                                </div>
+                            </div>
+                        </form>
+
+                        <script>
+                        // Fungsi untuk load Feeder berdasarkan Munisipiu
+                        function loadFeederOptions(munisipiuId) {
+                            var feederSelect = document.getElementById('feeder');
+                            var trafoSelect = document.getElementById('trafo');
+                            var contadorSelect = document.getElementById('contador');
+                            
+                            // Reset dropdowns dependen
+                            trafoSelect.innerHTML = '<option value="">Hotu</option>';
+                            contadorSelect.innerHTML = '<option value="">Hotu</option>';
+                            
+                            if (munisipiuId === "Hotu") {
+                                feederSelect.innerHTML = '<option value="">Loading...</option>';
+                                fetch('{% url "app:getFeeder" %}')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        let options = '<option value="Hotu">Hotu</option>';
+                                        data.forEach(function(feeder) {
+                                            options += `<option value="${feeder.id}">${feeder.naran_feeder || feeder.feeder}</option>`;
+                                        });
+                                        feederSelect.innerHTML = options;
+                                    })
+                                    .catch((error) => {
+                                        console.error('Error loading feeders:', error);
+                                        feederSelect.innerHTML = '<option value="">Hotu</option>';
+                                    });
+                            } else {
+                                feederSelect.innerHTML = '<option value="">Loading...</option>';
+                                fetch('{% url "app:getDetailFeeder" %}?munisipiu=' + munisipiuId)
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        let options = '<option value="">Hotu</option>';
+                                        data.forEach(function(feeder) {
+                                            options += `<option value="${feeder.id}">${feeder.naran_feeder || feeder.feeder}</option>`;
+                                        });
+                                        feederSelect.innerHTML = options;
+                                    })
+                                    .catch((error) => {
+                                        console.error('Error loading feeders:', error);
+                                        feederSelect.innerHTML = '<option value="">Error loading data</option>';
+                                    });
+                            }
+                        }
+
+                        // Fungsi untuk load Trafo berdasarkan Feeder
+                        function loadTrafoOptions(feederId) {
+                            var trafoSelect = document.getElementById('trafo');
+                            var contadorSelect = document.getElementById('contador');
+                            
+                            // Reset dropdown dependen
+                            contadorSelect.innerHTML = '<option value="">Hotu</option>';
+                            
+                            if (feederId === "Hotu" || !feederId) {
+                                trafoSelect.innerHTML = '<option value="">Loading...</option>';
+                                fetch('{% url "app:getTrafo" %}')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        let options = '<option value="Hotu">Hotu</option>';
+                                        data.forEach(function(trafo) {
+                                            options += `<option value="${trafo.id}">${trafo.zona || trafo.naran}</option>`;
+                                        });
+                                        trafoSelect.innerHTML = options;
+                                    })
+                                    .catch((error) => {
+                                        console.error('Error loading trafos:', error);
+                                        trafoSelect.innerHTML = '<option value="">Hotu</option>';
+                                    });
+                            } else {
+                                trafoSelect.innerHTML = '<option value="">Loading...</option>';
+                                fetch('{% url "app:getDetailTrafo" %}?feeder=' + feederId)
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        let options = '<option value="">Hotu</option>';
+                                        data.forEach(function(trafo) {
+                                            options += `<option value="${trafo.id}">${trafo.zona || trafo.naran}</option>`;
+                                        });
+                                        trafoSelect.innerHTML = options;
+                                    })
+                                    .catch((error) => {
+                                        console.error('Error loading trafos:', error);
+                                        trafoSelect.innerHTML = '<option value="">Error loading data</option>';
+                                    });
+                            }
+                        }
+
+                        // Fungsi untuk load Contador berdasarkan Trafo
+                        function loadContadorOptions(trafoId) {
+                            var contadorSelect = document.getElementById('contador');
+                            
+                            if (trafoId === "Hotu" || !trafoId) {
+                                contadorSelect.innerHTML = '<option value="">Loading...</option>';
+                                fetch('{% url "app:getContador" %}')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        let options = '<option value="Hotu">Hotu</option>';
+                                        data.forEach(function(contador) {
+                                            options += `<option value="${contador.id}">${contador.nu_kontador}</option>`;
+                                        });
+                                        contadorSelect.innerHTML = options;
+                                    })
+                                    .catch((error) => {
+                                        console.error('Error loading contadors:', error);
+                                        contadorSelect.innerHTML = '<option value="">Hotu</option>';
+                                    });
+                            } else {
+                                contadorSelect.innerHTML = '<option value="">Loading...</option>';
+                                fetch('{% url "app:getDetailContador" %}?trafo=' + trafoId)
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        let options = '<option value="">Hotu</option>';
+                                        data.forEach(function(contador) {
+                                            options += `<option value="${contador.id}">${contador.nu_kontador || contador.zona}</option>`;
+                                        });
+                                        contadorSelect.innerHTML = options;
+                                    })
+                                    .catch((error) => {
+                                        console.error('Error loading contadors:', error);
+                                        contadorSelect.innerHTML = '<option value="">Error loading data</option>';
+                                    });
+                            }
+                        }
+
+                        // Event Listeners
+                        document.getElementById('munisipiu').addEventListener('change', function() {
+                            loadFeederOptions(this.value);
+                        });
+
+                        document.getElementById('feeder').addEventListener('change', function() {
+                            loadTrafoOptions(this.value);
+                        });
+
+                        document.getElementById('trafo').addEventListener('change', function() {
+                            loadContadorOptions(this.value);
+                        });
+
+                        // Initialize on page load
+                        window.addEventListener('DOMContentLoaded', function() {
+                            // Check if there are pre-selected values from GET parameters
+                            const urlParams = new URLSearchParams(window.location.search);
+                            const munisipiuId = urlParams.get('munisipiu');
+                            const feederId = urlParams.get('feeder');
+                            const trafoId = urlParams.get('trafo');
+                            
+                            if (munisipiuId) {
+                                document.getElementById('munisipiu').value = munisipiuId;
+                                loadFeederOptions(munisipiuId);
+                                
+                                // Load feeder options first, then set value after loading
+                                setTimeout(() => {
+                                    if (feederId) {
+                                        document.getElementById('feeder').value = feederId;
+                                        loadTrafoOptions(feederId);
+                                        
+                                        setTimeout(() => {
+                                            if (trafoId) {
+                                                document.getElementById('trafo').value = trafoId;
+                                                loadContadorOptions(trafoId);
+                                            }
+                                        }, 500);
+                                    }
+                                }, 500);
+                            }
+                        });
+
+                        // Tambahkan style untuk select yang loading
+                        const style = document.createElement('style');
+                        style.textContent = `
+                            select[disabled] {
+                                opacity: 0.7;
+                                cursor: not-allowed;
+                            }
+                            .loading-option {
+                                color: #999;
+                                font-style: italic;
+                            }
+                        `;
+                        document.head.appendChild(style);
+                        </script>
+                            <script>
+                                document.getElementById('relatoriuForm').addEventListener('submit', function(e) {
+                                    var branch = document.getElementById('branch').value;
+                                    var feeder = document.getElementById('feeder').value;
+                                    var operasaun_trafo = document.getElementById('operasaun_trafo').value;
+                                    var operasaun_contador = document.getElementById('operasaun_contador').value;
+                                    var tinan = document.getElementById('tinan').value;
+                                    var fulan = document.getElementById('fulan').value;
+
+                                    if (
+                                        (branch === "" || branch === "Hotu") &&
+                                        (feeder === "" || feeder === "Hotu") &&
+                                        operasaun_trafo === "" &&
+                                        operasaun_contador === "" &&
+                                        tinan === "" &&
+                                        fulan === ""
+                                    ) {
+                                        var errorDiv = document.getElementById('formError');
+                                        errorDiv.innerText = "Favor hili opsaun ruma";
+                                        errorDiv.style.display = "block";
+                                        e.preventDefault();
+                                    } else {
+                                        document.getElementById('formError').style.display = "none";
+                                    }
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

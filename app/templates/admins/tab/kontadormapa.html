@@ -1,0 +1,150 @@
+{% load static %}
+<style>
+    .bg_mapa {
+        padding: 10px;
+        border-radius: 10px;
+        background-color: #f0eee9;
+        width: 100px;
+        box-shadow: 0 4px 20px 0 #8c8c88;
+    }
+</style>
+<div id="map_detail" style="width:100%; height:350px"></div>
+<!-- LEAFLET -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<!-- LEAFLET -->
+<script>
+    var map = L.map('map_detail').setView([-8.5564752, 125.580097], 10);
+
+    var basemaps = {
+        OpenStreetMap: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 20,
+            layers: 'TOPO-WMS'
+        }),
+
+        GoogleSatellite: L.tileLayer.wms('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+        }),
+    };
+    L.control.layers(basemaps, {}, {
+        collapsed: false
+    }).addTo(map);
+    // end base map
+
+    basemaps.OpenStreetMap.addTo(map);
+
+    map.setView([-8.5564752, 125.580097], 8);
+
+    map.locate({
+        setView: true,
+        maxZoom: 9
+    });
+
+    var detail = L.icon({
+        iconUrl: '{% static "img/EDTL.png" %}',
+        iconSize: [12, 12]
+    });
+
+    var markers = [];
+
+    {% for location in dadus %}
+        {% if location.kordinat %}
+            var marker = L.marker([{{ location.kordinat }}], {
+                icon: detail,
+                branchId: "{% if location.trafo and location.trafo.feeder and location.trafo.feeder.munisipiu %}{{ location.trafo.feeder.munisipiu.id }}{% else %}None{% endif %}"
+            }).addTo(map).bindPopup(
+                "<center><b><h2>{% if location.trafo and location.trafo.feeder and location.trafo.feeder.munisipiu %}{{ location.trafo.feeder.munisipiu.munisipiu }}{% else %}None{% endif %}</center></h2></b>" +
+                "Nu Kontador: <b>{{ location.nu_kontador }}</b><br>" +
+                "Phase: <b>{{ location.phase }}</b><br>" +
+                "Disjuntor Jeral: <b>{{ location.disjuntor_jeral }}</b><br>" +
+                "Medida Kabu: <b>{{ location.medida_kabu }}</b><br>" +                
+                "Numeru Trafo: <b>{{ location.numeru_trafo }}</b><br>" +
+                "Numeru Pole: <b>{{ location.numeru_pole }}</b><br>" +
+                "Konta Tuan: <b>{{ location.konta_tuan }}</b><br>" +
+                "Ligasaun Arde: <b>{{ location.ligasaun_arde }}</b><br>" +
+                "Cliente: <b>{% if location.cliente %}{{ location.cliente.naran }}{% else %}None{% endif %}</b><br>" +
+                "Trafo: <b>{% if location.trafo %}{{ location.trafo.zona }}{% else %}None{% endif %}</b><br>" +
+                "Tekniku Montajen: <b>{% if location.tekniku %}{{ location.tekniku.naran }}{% else %}None{% endif %}</b><br>"
+            );
+            marker.agentName = "{{ location.nu_kontador }}";
+            markers.push(marker);
+        {% endif %}
+    {% endfor %}
+
+    // Search Box
+    var searchControl = L.control({position: 'topright'});
+    searchControl.onAdd = function(map) {
+        var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+        div.innerHTML = '<input id="mapSearchBox" type="text" placeholder="Peskiza By Numeru Kontador.." style="width:150px;padding:2px;">';
+        div.style.backgroundColor = 'white';
+        div.style.padding = '5px';
+        div.style.borderRadius = '4px';
+        L.DomEvent.disableClickPropagation(div);
+        return div;
+    };
+    searchControl.addTo(map);
+
+    // branch dialog with scroll list
+    const customButton = L.control({
+        position: 'topright'
+    });
+
+    customButton.onAdd = () => {
+        const buttonDiv = L.DomUtil.create('div', 'button-wrapper');
+
+        buttonDiv.innerHTML = `<center>
+            <div class='bg_mapa' style="max-height:200px;overflow-y:auto;">
+            <font size='1'>Filtru Kontador (Munisipiu)</font></br>
+            <button id="branchBtn_all" style='border-radius:4px;margin-top:5px;background:#ccc;' onclick="filterByBranch('all');setActiveBranch('all')">Hotu</button><br>
+            {% for data in munisipiu %}
+            <button id="branchBtn_{{ data.id }}" style='border-radius:4px;margin-bottom:2px;' onclick="filterByBranch('{{ data.id }}');setActiveBranch('{{ data.id }}')">{{ data.munisipiu }}</button><br>
+            {% endfor %}
+            </div>
+        </center>`;
+        // JS function to set active branch button
+        window.setActiveBranch = function(branchId) {
+            // Remove active style from all buttons
+            document.querySelectorAll("[id^='branchBtn_']").forEach(function(btn) {
+            btn.style.background = '#ccc';
+            btn.style.fontWeight = 'normal';
+            });
+            // Set active style for selected button
+            var activeBtn = document.getElementById('branchBtn_' + branchId);
+            if (activeBtn) {
+            activeBtn.style.background = '#8c8c88';
+            activeBtn.style.fontWeight = 'bold';
+            }
+        };
+        // Set default active
+        setTimeout(function(){ setActiveBranch('all'); }, 100);
+        return buttonDiv;
+    };
+    customButton.addTo(map);
+
+    // JS filter function
+    function filterByBranch(branchId) {
+        markers.forEach(function(marker) {
+            var markerBranch = marker.options.branchId || '';
+            if (branchId === 'all' || markerBranch == branchId) {
+                if (!map.hasLayer(marker)) marker.addTo(map);
+            } else {
+                if (map.hasLayer(marker)) map.removeLayer(marker);
+            }
+        });
+    }
+
+
+
+    document.getElementById('mapSearchBox').addEventListener('keyup', function(e) {
+        var query = this.value.toLowerCase();
+        markers.forEach(function(marker) {
+            var match = marker.agentName.toLowerCase().includes(query);
+            if (match || query === '') {
+                if (!map.hasLayer(marker)) marker.addTo(map);
+            } else {
+                if (map.hasLayer(marker)) map.removeLayer(marker);
+            }
+        });
+    });
+</script>

@@ -1,0 +1,275 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Hato'o Keixa | EDTL</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="{% static 'img/EDTL.png' %}" rel="icon">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- CSS Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #9b59b6;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hero-section {
+            background: linear-gradient(rgba(44, 62, 80, 0.8), rgba(44, 62, 80, 0.9)), url('{% static "img/hero.jpg" %}') center/cover no-repeat;
+            padding: 80px 0 60px;
+            border-radius: 0 0 30px 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #3498db, #9b59b6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-elegant {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: none;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .card-elegant:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header-elegant {
+            background: linear-gradient(135deg, var(--danger-color), #c0392b);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 20px 20px 0 0 !important;
+            border: none;
+            text-align: center;
+        }
+
+        .card-header-elegant h3 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .form-control-elegant {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 12px 20px;
+            transition: var(--transition);
+            background-color: #fcfcfc;
+        }
+
+        .form-control-elegant:focus {
+            border-color: var(--danger-color);
+            box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.15);
+            background-color: #fff;
+        }
+
+        .btn-elegant {
+            background: linear-gradient(135deg, var(--danger-color), #c0392b);
+            border: none;
+            border-radius: 12px;
+            padding: 14px 30px;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-elegant:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(231, 76, 60, 0.3);
+            color: white;
+            background: linear-gradient(135deg, #c0392b, var(--danger-color));
+        }
+
+        .animated {
+            animation-duration: 0.8s;
+            animation-fill-mode: both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fadeInUp {
+            animation-name: fadeInUp;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .back-link:hover {
+            color: white;
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-5px);
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center justify-content-center">
+            <div class="col-lg-8 position-relative">
+                <div class="position-absolute top-0 start-0">
+                    <a href="{% url 'app:index' %}" class="back-link animated fadeInUp">
+                        <i class="fas fa-arrow-left me-2"></i> Fila ba Varanda
+                    </a>
+                </div>
+                <h1 class="hero-title mb-2 animated fadeInUp" style="animation-delay: 0.2s;">Hato'o Keixa</h1>
+                <p class="text-light fs-5 animated fadeInUp" style="animation-delay: 0.3s;">Portal Atendimentu Reklamasaun EDTL, E.P</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container flex-grow-1">
+    <!-- Messages -->
+    {% if messages %}
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-8">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert" style="border-radius: 15px;">
+                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-triangle{% endif %} me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card-elegant animated fadeInUp" style="animation-delay: 0.5s;">
+                <div class="card-header-elegant">
+                    <h3><i class="fas fa-exclamation-circle me-2"></i>Formuláriu Keixa</h3>
+                    <p class="mb-0 mt-1" style="font-size: 0.9rem; opacity: 0.9;">Prenxe dadus iha kraik hodi hato'o ita-nia reklamasaun</p>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <form action="{% url 'app:husu_keixa' %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Numeru Kontador -->
+                        <div class="mb-4">
+                            <label class="form-label" for="nu_kontador"><i class="fas fa-tachometer-alt me-2 text-primary"></i>Numeru Kontador *</label>
+                            <input type="text" class="form-control form-control-elegant" id="nu_kontador" name="nu_kontador" placeholder="Hatama numeru kontador nian (ezemplu: 14000123)" required>
+                            <div class="form-text mt-2"><i class="fas fa-info-circle me-1"></i>Ami uza numeru ne'e atu buka ita-nia identidade.</div>
+                        </div>
+
+                        <!-- Kategoria -->
+                        <div class="mb-4">
+                            <label class="form-label" for="kategoria"><i class="fas fa-tags me-2 text-primary"></i>Kategoria Keixa *</label>
+                            <select class="form-select form-control-elegant" id="kategoria" name="kategoria" required>
+                                <option value="" disabled selected>-- Hili Kategoria --</option>
+                                {% for value, label in kategoria_choices %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Deskrisaun -->
+                        <div class="mb-4">
+                            <label class="form-label" for="deskrisaun"><i class="fas fa-align-left me-2 text-primary"></i>Deskrisaun *</label>
+                            <textarea class="form-control form-control-elegant" id="deskrisaun" name="deskrisaun" rows="4" placeholder="Esplika ho detailhu problema ne'ebé akontese..." required></textarea>
+                        </div>
+
+                        <!-- Foto -->
+                        <div class="mb-5">
+                            <label class="form-label" for="foto"><i class="fas fa-camera me-2 text-primary"></i>Foto Bukti (Opsional)</label>
+                            <input class="form-control form-control-elegant" type="file" id="foto" name="foto" accept="image/*">
+                            <div class="form-text mt-2"><i class="fas fa-image me-1"></i>Hatama foto hanesan bukti atu ajuda ami-nia teknisi (Mak. 5MB).</div>
+                        </div>
+
+                        <!-- Submit -->
+                        <button type="submit" class="btn btn-elegant">
+                            <i class="fas fa-paper-plane me-2"></i> Hato'o Keixa
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="mt-auto py-4 text-center" style="background: var(--primary-color); color: white;">
+    <div class="container">
+        <p class="mb-0">&copy; <span id="year"></span> EDTL, E.P. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<script>
+    document.getElementById("year").innerHTML = new Date().getFullYear();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

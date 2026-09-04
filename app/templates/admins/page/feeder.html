@@ -1,0 +1,1519 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+{% if act == 'show' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Feeder</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item active">Feeder</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <ul class="nav nav-tabs mb-3 shadow-sm bg-light" id="pakoteTabs" style="padding: 5px;">
+                    {% with url_name=request.resolver_match.url_name %}
+                        <li class="nav-item" style="margin-right: 5px;">
+                            <a class="nav-link {% if url_name == 'feeder' %}active{% endif %} d-flex align-items-center"
+                               href="{% url 'app:feeder' %}"
+                               aria-selected="{% if url_name == 'feeder' %}true{% else %}false{% endif %}"
+                               style="font-weight: 500; font-size: 16px; border-radius: 8px;">
+                                <i class="fas fa-bolt mr-2"></i> Feeder
+                            </a>
+                        </li>
+                        <li class="nav-item" style="margin-right: 5px;">
+                            <a class="nav-link {% if url_name == 'ligasaunFeeder' %}active{% endif %} d-flex align-items-center"
+                               href="{% url 'app:ligasaunFeeder' %}"
+                               aria-selected="{% if url_name == 'ligasaunFeeder' %}true{% else %}false{% endif %}"
+                               style="font-weight: 500; font-size: 16px; border-radius: 8px;">
+                                <i class="fas fa-grip-lines mr-2"></i> Linha Feeder
+                            </a>
+                        </li>
+                        <li class="nav-item" style="margin-right: 5px;">
+                            <a class="nav-link {% if url_name == 'trafo' %}active{% endif %} d-flex align-items-center"
+                               href="{% url 'app:trafo' %}"
+                               aria-selected="{% if url_name == 'trafo' %}true{% else %}false{% endif %}"
+                               style="font-weight: 500; font-size: 16px; border-radius: 8px;">
+                                <i class="fas fa-broadcast-tower mr-2"></i> Trafo
+                            </a>
+                        </li>
+                    {% endwith %}
+                </ul>
+                <style>
+                    .nav-tabs .nav-link.active {
+                        background: linear-gradient(90deg, #6c757d 0%, #343a40 100%);
+                        color: #fff !important;
+                        box-shadow: 0 2px 8px rgba(108,117,125,0.15);
+                        border: none;
+                    }
+                    .nav-tabs .nav-link {
+                        color: #6c757d !important;
+                        border: none;
+                        transition: background 0.3s, color 0.3s;
+                    }
+                    .nav-tabs {
+                        border-bottom: none;
+                    }
+                </style>                        
+            </div>
+        </div>
+    </div>
+</section>
+
+{% with url_name=request.resolver_match.url_name %}
+    {% if url_name == 'feeder' %}
+        {% include 'admins/tab/tab_feeder.html' %}
+    {% elif url_name == 'ligasaunFeeder' %}
+        {% include 'admins/tab/tab_ligasaunfeeder.html' %}
+    {% elif url_name == 'trafo' %}
+        {% include 'admins/tab/tab_trafo.html' %}
+    {% endif %}
+{% endwith %}
+
+{% elif act == 'input' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Feeder</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'app:feeder' %}">Feeder</a></li>
+                    <li class="breadcrumb-item active">Formulariu Aumenta Feeder</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-plus mr-1"></i>
+                        <h3 class="card-title mb-0">Formulariu Feeder</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if message %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                        {% endif %}
+                        <form action="" method="post" autocomplete="off">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Munisipiu:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-bolt"></i></span>
+                                    </div>
+                                    <select name="munisipiu" class="form-control" required>
+                                        <option value="">-------</option>
+                                        {% for m in munisipiu %}
+                                            <option value="{{ m.id }}">{{ m.munisipiu }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Naran:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-bolt"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="Prienxe Naran Feeder"
+                                        name="naran" maxlength="50" autocomplete="off" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Deskrisaun Zona:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-bolt"></i></span>
+                                    </div>
+                                    <textarea class="form-control" placeholder="Prienxe Deskrisaun Zona" name="deskrisaun_zona" autocomplete="off" required></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary float-left">
+                                    <i class="fas fa-save"></i> Submete
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% elif act == 'edit' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Feeder</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'app:feeder' %}">Feeder</a></li>
+                    <li class="breadcrumb-item active">Formulariu Atualiza Feeder</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-plus mr-1"></i>
+                        <h3 class="card-title mb-0">Formulariu Feeder</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if message %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                        {% endif %}
+                        <form action="" method="post" autocomplete="off">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Munisipiu:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-bolt"></i></span>
+                                    </div>
+                                    <select name="munisipiu" class="form-control" required>
+                                        <option value="">-------</option>
+                                        {% for m in munisipiu %}
+                                            <option value="{{ m.id }}" {% if m.id == data.munisipiu.id %}selected{% endif %}>{{ m.munisipiu }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Naran:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-bolt"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="Prienxe Naran Feeder"
+                                        name="naran" maxlength="50" autocomplete="off" required value="{{ data.naran_feeder }}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Deskrisaun Zona:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-bolt"></i></span>
+                                    </div>
+                                    <textarea class="form-control" placeholder="Prienxe Deskrisaun Zona" name="deskrisaun_zona" autocomplete="off" required>{{data.deskrisaun_zona}}</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary float-left">
+                                    <i class="fas fa-save"></i> Submete
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% elif act == 'inputligasaun' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Ligasaun Feeder</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'app:ligasaunFeeder' %}">Ligasaun Feeder</a></li>
+                    <li class="breadcrumb-item active">Formulariu Aumenta Ligasaun Feeder</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-plus mr-1"></i>
+                        <h3 class="card-title mb-0">Formulariu Ligasaun Feeder</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if message %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                        {% endif %}
+                        <form action="" method="post" autocomplete="off">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Feeder:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-bolt"></i></span>
+                                    </div>
+                                    <select name="feeder" class="form-control" required>
+                                        <option value="">-------</option>
+                                        {% for f in dadus %}
+                                        <option value="{{ f.id }}">{{ f.naran_feeder }} ({{f.munisipiu}})</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Mapa:</label>
+                                <div class="input-group">
+                                    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+                                    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+                                    <style>
+                                        #map { height: 500px; width: 100%; border: 1px solid #ccc; border-radius: 8px; }
+                                        .leaflet-container { font: inherit; }
+                                    </style>
+
+                                    <div id="map"></div>
+                                    <textarea id="kordinat" name="kordinat" hidden></textarea>
+
+                                    <script>
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        // Default center (Dili, Timor-Leste)
+                                        var map = L.map('map').setView([-8.558, 125.573], 14);
+
+                                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                            maxZoom: 19,
+                                            attribution: '&copy; OpenStreetMap contributors'
+                                        }).addTo(map);
+
+                                        var detail = L.icon({
+                                            iconUrl: '{% static "img/EDTL.png" %}',
+                                            iconSize: [20, 20]
+                                        });
+
+                                        // Data holders
+                                        let latlngs = [];
+                                        let markers = [];
+                                        let polyline = L.polyline([], { color: 'blue', weight: 4 }).addTo(map);
+
+                                        // Segment markers & total distance
+                                        let segmentMarkers = []; // markers placed at midpoints showing distance per segment
+                                        let totalDistanceMeters = 0;
+
+                                        // Hidden input for form submission
+                                        let hiddenInput = document.createElement('input');
+                                        hiddenInput.type = 'hidden';
+                                        hiddenInput.name = 'coordinates';
+                                        document.querySelector('form').appendChild(hiddenInput);
+
+                                        // Textarea output
+                                        const kordinatTextarea = document.getElementById('kordinat');
+                                        if (kordinatTextarea) {
+                                            kordinatTextarea.style.width = '100%';
+                                            kordinatTextarea.style.minHeight = '120px';
+                                            kordinatTextarea.readOnly = true;
+                                            kordinatTextarea.placeholder = 'Lista koordinat (lat,lng)';
+                                        }
+
+                                        // Distance formatter
+                                        function formatDistance(meters) {
+                                            if (meters >= 1000) return (meters/1000).toFixed(3) + ' km';
+                                            return meters.toFixed(1) + ' m';
+                                        }
+
+                                        // Haversine distance in meters
+                                        function calcDistance(a, b) {
+                                            var R = 6371e3;
+                                            var lat1 = a.lat * Math.PI/180;
+                                            var lat2 = b.lat * Math.PI/180;
+                                            var dLat = (b.lat - a.lat) * Math.PI/180;
+                                            var dLon = (b.lng - a.lng) * Math.PI/180;
+                                            var sinDlat = Math.sin(dLat/2), sinDlon = Math.sin(dLon/2);
+                                            var aa = sinDlat*sinDlat + Math.cos(lat1)*Math.cos(lat2)*sinDlon*sinDlon;
+                                            var cc = 2 * Math.atan2(Math.sqrt(aa), Math.sqrt(1-aa));
+                                            return R * cc;
+                                        }
+
+                                        function clearSegmentMarkers() {
+                                            segmentMarkers.forEach(m => { if (map.hasLayer(m)) map.removeLayer(m); });
+                                            segmentMarkers = [];
+                                        }
+
+                                        function updateSegmentMarkers() {
+                                            clearSegmentMarkers();
+                                            totalDistanceMeters = 0;
+                                            for (let i = 0; i < latlngs.length - 1; i++) {
+                                                const a = latlngs[i];
+                                                const b = latlngs[i+1];
+                                                const dist = calcDistance(a, b);
+                                                totalDistanceMeters += dist;
+                                                const midLat = (a.lat + b.lat)/2;
+                                                const midLng = (a.lng + b.lng)/2;
+                                                const marker = L.marker([midLat, midLng], {
+                                                    icon: L.divIcon({
+                                                        className: 'distance-label',
+                                                        html: `<div style="background:#fff;border-radius:4px;padding:2px 6px;border:1px solid #007bff;font-size:12px;">${formatDistance(dist)}</div>`,
+                                                        iconSize: [80, 24]
+                                                    }),
+                                                    interactive: false
+                                                }).addTo(map);
+                                                segmentMarkers.push(marker);
+                                            }
+                                            // Update total distance UI
+                                            const totalEl = document.getElementById('totalDistanceDisplay');
+                                            if (totalEl) totalEl.innerText = formatDistance(totalDistanceMeters);
+                                        }
+
+                                        function updateOutputs() {
+                                            const arr = latlngs.map(p => ({ lat: p.lat, lng: p.lng }));
+                                            hiddenInput.value = JSON.stringify(arr);
+                                            if (kordinatTextarea) {
+                                                kordinatTextarea.value = arr
+                                                    .map(o => o.lat.toFixed(6) + ',' + o.lng.toFixed(6))
+                                                    .join('\n');
+                                            }
+                                        }
+
+                                        function refreshPolyline(fit = true) {
+                                            polyline.setLatLngs(latlngs);
+                                            updateSegmentMarkers();
+                                            updateOutputs();
+                                            // if (fit && latlngs.length > 1) {
+                                            //     try {
+                                            //         map.fitBounds(polyline.getBounds(), { padding: [20,20] });
+                                            //     } catch(e){ /* ignore */ }
+                                            // }
+                                        }
+
+                                        function addPoint(latlng, opts = {}) {
+                                            let marker = L.marker(latlng, { icon:detail, draggable: true }).addTo(map);
+                                            markers.push(marker);
+                                            latlngs.push(marker.getLatLng());
+                                            refreshPolyline();
+
+                                            // Drag to adjust
+                                            marker.on('drag', () => {
+                                                const idx = markers.indexOf(marker);
+                                                if (idx > -1) {
+                                                    latlngs[idx] = marker.getLatLng();
+                                                    refreshPolyline(false);
+                                                }
+                                            });
+
+                                            // Right-click to remove
+                                            marker.on('contextmenu', () => {
+                                                map.removeLayer(marker);
+                                                const idx = markers.indexOf(marker);
+                                                if (idx > -1) {
+                                                    markers.splice(idx, 1);
+                                                    latlngs.splice(idx, 1);
+                                                    refreshPolyline();
+                                                }
+                                            });
+
+                                            // If the add was programmatic and wants to fit map, do so
+                                            if (opts.fit && latlngs.length > 1) map.fitBounds(polyline.getBounds(), { padding: [20,20] });
+                                        }
+
+                                        function undoLast() {
+                                            if (markers.length) {
+                                                let m = markers.pop();
+                                                map.removeLayer(m);
+                                                latlngs.pop();
+                                                refreshPolyline(false);
+                                            }
+                                        }
+
+                                        function clearAll() {
+                                            markers.forEach(m => map.removeLayer(m));
+                                            markers = [];
+                                            latlngs = [];
+                                            refreshPolyline(false);
+                                        }
+
+                                        // Map click adds point
+                                        map.on('click', e => addPoint(e.latlng));
+
+                                        // Keyboard shortcut Ctrl+Z / Cmd+Z
+                                        document.addEventListener('keydown', e => {
+                                            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+                                                e.preventDefault();
+                                                undoLast();
+                                            }
+                                        });
+
+                                        // Custom control buttons + total distance display
+                                        const toolControl = L.control({ position: 'topleft' });
+                                        toolControl.onAdd = function () {
+                                            const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+                                            div.style.background = '#fff';
+                                            div.style.padding = '6px';
+                                            div.style.fontSize = '12px';
+                                            div.style.lineHeight = '1.2em';
+                                            div.innerHTML = `
+                                                <button type="button" id="btnUndo" style="display:block;margin:2px 0;width:90px;">Undo</button>
+                                                <button type="button" id="btnClear" style="display:block;margin:2px 0;width:90px;">Clear</button>
+                                                <div style="margin-top:6px;max-width:160px;">
+                                                    <strong>Instrusaun:</strong><br>
+                                                    Klik: Adisiona pontu<br>
+                                                    Drag: muda pontu<br>
+                                                    Right-click: hamoos pontu<br>
+                                                    Undo / Ctrl+Z<br>
+                                                    Clear: hamoos hotu
+                                                </div>
+                                                <div style="margin-top:6px;border-top:1px solid #eee;padding-top:6px;">
+                                                    <div style="font-weight:600;font-size:13px;">Total Distansa:</div>
+                                                    <div id="totalDistanceDisplay" style="font-size:13px;color:#007bff;">0 m</div>
+                                                </div>
+                                            `;
+                                            L.DomEvent.disableClickPropagation(div);
+                                            return div;
+                                        };
+                                        toolControl.addTo(map);
+
+                                        document.getElementById('btnUndo').addEventListener('click', undoLast);
+                                        document.getElementById('btnClear').addEventListener('click', clearAll);
+
+                                    });
+                                    </script>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary float-left">
+                                    <i class="fas fa-save"></i> Submete
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% elif act == 'editligasaun' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Ligasaun Feeder</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'app:ligasaunFeeder' %}">Ligasaun Feeder</a></li>
+                    <li class="breadcrumb-item active">Formulariu Atualiza Ligasaun Feeder</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-plus mr-1"></i>
+                        <h3 class="card-title mb-0">Formulariu Ligasaun Feeder</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if message %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                        {% endif %}
+                        <form action="" method="post" autocomplete="off">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Feeder:</label>
+                                <!-- <pre>{{ kordinat_feeder|safe }}</pre> -->
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="nav-icon fas fa-bolt"></i></span>
+                                    </div>
+                                    <select name="feeder" class="form-control" required>
+                                        <option value="">-------</option>
+                                        {% for f in dadus %}
+                                        <option value="{{ f.id }}" {% if f.id == feeder.id %}selected{% endif %}>{{ f.naran_feeder }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Mapa:</label>
+                                <div class="input-group">
+                                    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+                                    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+                                    <style>
+                                        #map { height: 500px; width: 100%; border: 1px solid #ccc; border-radius: 8px; }
+                                        .leaflet-container { font: inherit; }
+                                    </style>
+
+                                    <div id="map"></div>
+                                    <textarea id="kordinat" name="kordinat" hidden></textarea>
+                                    <textarea id="kordinat_tuan" name="kordinat_tuan" hidden></textarea>
+                                    
+                                    <!-- Load feeder data JSON -->
+                                    {{ kordinat_feeder|json_script:"feeder-data" }}
+
+                                    <script>
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        // Map setup
+                                        var map = L.map('map').setView([-8.558, 125.573], 14);
+                                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                            maxZoom: 19,
+                                            attribution: '&copy; OpenStreetMap contributors'
+                                        }).addTo(map);
+
+                                        // Icon marker custom
+                                        var detail = L.icon({
+                                            iconUrl: '{% static "img/EDTL.png" %}',
+                                            iconSize: [20, 20]
+                                        });
+
+                                        // ===== Load DB feeder polyline =====
+                                        var feederData = JSON.parse(document.getElementById('feeder-data').textContent);
+                                        console.log("feederData:", feederData);
+
+                                        var feederCoords = {};  // koordinat per feeder
+                                        var allPoints = [];
+
+                                        feederData.forEach(function (kf) {
+                                            if (kf.kordinat) {
+                                                var coords = kf.kordinat.split(',').map(Number);
+                                                if (coords.length === 2) {
+                                                    // Buat marker DB
+                                                    L.marker(coords, { icon: detail }).addTo(map)
+                                                        .bindPopup('Feeder: ' + kf.feeder.naran_feeder + '<br>Kordinat: ' + kf.kordinat);
+
+                                                    var feederName = kf.feeder.naran_feeder || "Unknown";
+                                                    if (!feederCoords[feederName]) feederCoords[feederName] = [];
+                                                    feederCoords[feederName].push(coords);
+
+                                                    allPoints.push(coords);
+                                                }
+                                            }
+                                        });
+
+                                        // Polyline DB per feeder
+                                        Object.keys(feederCoords).forEach(function(feederName){
+                                            var coords = feederCoords[feederName];
+                                            if (coords.length > 1) {
+                                                L.polyline(coords, { color: 'blue' }).addTo(map)
+                                                    .bindPopup('Polyline Feeder: ' + feederName);
+                                            }
+                                        });
+
+                                        // ===== Polyline editor =====
+                                        var latlngs = [];
+                                        var markers = [];
+                                        var polyline = L.polyline([], { color: 'red', weight: 4 }).addTo(map);
+
+                                        // Simpan koordinat lama dan yang dihapus
+                                        var oldLatlngs = [];
+                                        var deletedLatlngs = [];
+
+                                        // Hidden inputs & textarea
+                                        let hiddenInput = document.createElement('input');
+                                        hiddenInput.type = 'hidden';
+                                        hiddenInput.name = 'coordinates';
+                                        document.querySelector('form').appendChild(hiddenInput);
+
+                                        let deletedInput = document.createElement('input');
+                                        deletedInput.type = 'hidden';
+                                        deletedInput.name = 'deleted_coordinates';
+                                        document.querySelector('form').appendChild(deletedInput);
+
+                                        const kordinatTextarea = document.getElementById('kordinat');
+                                        if (kordinatTextarea) {
+                                            kordinatTextarea.style.width = '100%';
+                                            kordinatTextarea.style.minHeight = '120px';
+                                            kordinatTextarea.readOnly = true;
+                                            kordinatTextarea.placeholder = 'Lista koordinat (lat,lng)';
+                                        }
+
+                                        const kordinatTuanTextarea = document.getElementById('kordinat_tuan');
+                                        if (kordinatTuanTextarea) {
+                                            kordinatTuanTextarea.style.width = '100%';
+                                            kordinatTuanTextarea.style.minHeight = '120px';
+                                            kordinatTuanTextarea.readOnly = true;
+                                            kordinatTuanTextarea.placeholder = 'Lista koordinat Tuan (lat,lng)';
+                                        }
+
+                                        function updateOutputs() {
+                                            // Array koordinat terbaru (polyline aktif)
+                                            const arr = latlngs.map(p => ({ lat: p.lat, lng: p.lng }));
+                                            hiddenInput.value = JSON.stringify(arr);
+                                            deletedInput.value = JSON.stringify(deletedLatlngs);
+
+                                            // Update textarea koordinat terbaru
+                                            if (kordinatTextarea) {
+                                                kordinatTextarea.value = arr
+                                                    .map(o => o.lat.toFixed(6)+','+o.lng.toFixed(6))
+                                                    .join('\n');
+                                            }
+
+                                            // Update textarea koordinat lama (tuan)
+                                            if (kordinatTuanTextarea) {
+                                                kordinatTuanTextarea.value = oldLatlngs
+                                                    .map(o => o.lat.toFixed(6)+','+o.lng.toFixed(6))
+                                                    .join('\n');
+                                            }
+                                        }
+
+
+                                        function refreshPolyline(fit = true) {
+                                            polyline.setLatLngs(latlngs);
+                                            updateOutputs();
+                                        }
+
+                                        function addPoint(latlng) {
+                                            let marker = L.marker(latlng, { icon: detail, draggable: true }).addTo(map);
+                                            markers.push(marker);
+                                            latlngs.push(latlng);
+                                            refreshPolyline();
+
+                                            marker.on('drag', () => {
+                                                const idx = markers.indexOf(marker);
+                                                if (idx > -1) {
+                                                    latlngs[idx] = marker.getLatLng();
+                                                    refreshPolyline(false);
+                                                }
+                                            });
+
+                                            marker.on('contextmenu', () => {
+                                                map.removeLayer(marker);
+                                                const idx = markers.indexOf(marker);
+                                                if (idx > -1) {
+                                                    // Simpan koordinat lama jika marker dari DB
+                                                    if (oldLatlngs.includes(latlngs[idx])) {
+                                                        deletedLatlngs.push(latlngs[idx]);
+                                                    }
+
+                                                    markers.splice(idx, 1);
+                                                    latlngs.splice(idx, 1);
+                                                    refreshPolyline();
+                                                }
+                                            });
+                                        }
+
+                                        function undoLast() {
+                                            if (markers.length) {
+                                                let m = markers.pop();
+                                                map.removeLayer(m);
+                                                latlngs.pop();
+                                                refreshPolyline(false);
+                                            }
+                                        }
+
+                                        function clearAll() {
+                                            markers.forEach(m => map.removeLayer(m));
+                                            markers = [];
+                                            latlngs = [];
+                                            refreshPolyline(false);
+                                        }
+
+                                        // ===== Load DB polyline ke editor =====
+                                        allPoints.forEach(function(p){
+                                            let latlng = L.latLng(p[0], p[1]);
+                                            latlngs.push(latlng);
+                                            oldLatlngs.push(latlng);
+
+                                            let marker = L.marker(latlng, { icon: detail, draggable: true }).addTo(map);
+                                            markers.push(marker);
+
+                                            marker.on('drag', () => {
+                                                const idx = markers.indexOf(marker);
+                                                if (idx > -1) {
+                                                    latlngs[idx] = marker.getLatLng();
+                                                    refreshPolyline(false);
+                                                }
+                                            });
+
+                                            marker.on('contextmenu', () => {
+                                                map.removeLayer(marker);
+                                                const idx = markers.indexOf(marker);
+                                                if (idx > -1) {
+                                                    deletedLatlngs.push(latlngs[idx]);
+                                                    markers.splice(idx, 1);
+                                                    latlngs.splice(idx, 1);
+                                                    refreshPolyline();
+                                                }
+                                            });
+                                        });
+                                        refreshPolyline(false);
+
+                                        // Map click menambah titik
+                                        map.on('click', e => addPoint(e.latlng));
+
+                                        // Keyboard Ctrl+Z / Cmd+Z
+                                        document.addEventListener('keydown', e => {
+                                            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+                                                e.preventDefault();
+                                                undoLast();
+                                            }
+                                        });
+
+                                        // Custom control buttons
+                                        const toolControl = L.control({ position: 'topleft' });
+                                        toolControl.onAdd = function () {
+                                            const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+                                            div.style.background = '#fff';
+                                            div.style.padding = '4px';
+                                            div.style.fontSize = '12px';
+                                            div.style.lineHeight = '1.2em';
+                                            div.innerHTML = `
+                                                <button type="button" id="btnUndo" style="display:block;margin:2px 0;width:90px;">Undo</button>
+                                                <button type="button" id="btnClear" style="display:block;margin:2px 0;width:90px;">Clear</button>
+                                                <div style="margin-top:4px;max-width:120px;">
+                                                    <strong>Instrusaun:</strong><br>
+                                                    Klik mapa: tau pontu<br>
+                                                    Drag: muda pontu<br>
+                                                    Right-click: hamoos pontu<br>
+                                                    Undo / Ctrl+Z<br>
+                                                    Clear: hamoos hotu
+                                                </div>
+                                            `;
+                                            L.DomEvent.disableClickPropagation(div);
+                                            return div;
+                                        };
+                                        toolControl.addTo(map);
+
+                                        document.getElementById('btnUndo').addEventListener('click', undoLast);
+                                        document.getElementById('btnClear').addEventListener('click', clearAll);
+
+                                        // Auto fit map
+                                        if (latlngs.length > 0) {
+                                            map.fitBounds(latlngs);
+                                        }
+                                    });
+                                    </script>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary float-left">
+                                    <i class="fas fa-save"></i> Submete
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% elif act == 'detailligasaun' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Ligasaun Feeder</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'app:ligasaunFeeder' %}">Ligasaun Feeder</a></li>
+                    <li class="breadcrumb-item active">Detallu Ligasaun Feeder</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <h3 class="card-title"><i class="fas fa-bolt mr-2"></i> Detallu Ligasaun Feeder</h3>
+                    </div>
+                    <div class="card-body">
+                        <strong><i class="fas fa-bolt mr-2"></i> Feeder</strong>
+                        <p class="text-muted">
+                            {{dadus.naran_feeder}}
+                        </p>
+                        <hr>
+                        <strong><i class="fas fa-map-marker-alt mr-1"></i> Mapa Ligasaun Feeder</strong>
+                        <div id="map" style="height: 400px; width: 100%;"></div>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+{% load static %}
+{{ kordinat_feeder|json_script:"feeder-data" }}
+
+<script>
+    var map = L.map('map').setView([-8.5586, 125.5736], 7);
+
+    map.locate({
+        setView: true,
+        maxZoom: 13
+    });
+
+    var detail = L.icon({
+        iconUrl: '{% static "img/EDTL.png" %}',
+        iconSize: [10, 10]
+    });
+
+    // OpenStreetMap layer
+    var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    });
+
+    // Google Satellite layer (via third-party provider)
+    var googleSatLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+        attribution: '&copy; Google Satellite',
+        maxZoom: 20
+    });
+
+    // Add OSM as default
+    osmLayer.addTo(map);
+
+    // Layer control
+    var baseMaps = {
+        "OpenStreetMap": osmLayer,
+        "Google Satellite": googleSatLayer
+    };
+    L.control.layers(baseMaps).addTo(map);
+
+    var feederData = JSON.parse(document.getElementById('feeder-data').textContent);
+    console.log("feederData:", feederData);
+
+    // simpan koordinat per feeder
+    var feederCoords = {};
+
+    feederData.forEach(function (kf) {
+        if (kf.kordinat) {
+            var coords = kf.kordinat.split(',').map(Number);
+            if (coords.length === 2) {
+                // simpan marker
+                L.marker(coords, { icon: detail }).addTo(map)
+                    .bindPopup('Feeder: ' + kf.feeder.naran_feeder + '<br>Kordinat: ' + kf.kordinat);
+
+                // kelompokkan koordinat berdasarkan feeder
+                var feederName = kf.feeder.naran_feeder || "Unknown";
+                if (!feederCoords[feederName]) {
+                    feederCoords[feederName] = [];
+                }
+                feederCoords[feederName].push({coords: coords, id: kf.feeder.feeder_id});
+            }
+        }
+    });
+
+    // Fungsi kalkulasi jarak (haversine)
+    function calcDistance(latlng1, latlng2) {
+        var R = 6371e3; // meters
+        var lat1 = latlng1[0] * Math.PI / 180;
+        var lat2 = latlng2[0] * Math.PI / 180;
+        var dLat = (latlng2[0] - latlng1[0]) * Math.PI / 180;
+        var dLng = (latlng2[1] - latlng1[1]) * Math.PI / 180;
+
+        var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1) * Math.cos(lat2) *
+                Math.sin(dLng/2) * Math.sin(dLng/2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        var d = R * c;
+        return d; // meters
+    }
+
+    // buat polyline untuk tiap feeder secara terpisah dan kalkulasi jarak antar point
+    var distanceMarkers = [];
+    var totalDistanceMarkers = [];
+    Object.keys(feederCoords).forEach(function (feederName) {
+        var points = feederCoords[feederName];
+        if (points.length > 1) {
+            // Ambil array koordinat saja untuk polyline
+            var coordsArray = points.map(p => p.coords);
+            var polyline = L.polyline(coordsArray, { color: 'blue' }).addTo(map);
+
+            // Kalkulasi dan siapkan marker jarak antar point
+            var totalDist = 0;
+            for (var i = 0; i < coordsArray.length - 1; i++) {
+                var dist = calcDistance(coordsArray[i], coordsArray[i+1]);
+                totalDist += dist;
+                var midLat = (coordsArray[i][0] + coordsArray[i+1][0]) / 2;
+                var midLng = (coordsArray[i][1] + coordsArray[i+1][1]) / 2;
+                var distText = (dist/1000).toFixed(2) + " km";
+                // Buat marker jarak, tapi jangan tambahkan ke map dulu
+                var marker = L.marker([midLat, midLng], {
+                    icon: L.divIcon({
+                        className: 'distance-label',
+                        html: '<div style="background:#fff;border-radius:4px;padding:2px 6px;border:1px solid #007bff;font-size:12px;">' + distText + '</div>',
+                        iconSize: [60, 20]
+                    }),
+                    interactive: false
+                });
+                distanceMarkers.push(marker);
+            }
+            // Marker total distance di tengah polyline
+            var bounds = L.latLngBounds(coordsArray);
+            var center = bounds.getCenter();
+            var totalText = "Distansia Total: " + (totalDist/1000).toFixed(2) + " km";
+            // Geser marker total distance ke atas marker (offset Y)
+            var totalMarker = L.marker(center, {
+                icon: L.divIcon({
+                    className: 'total-distance-label',
+                    html: '<div style="background:#007bff;color:#fff;border-radius:6px;padding:4px 10px;border:2px solid #fff;font-size:14px;font-weight:bold;">' + totalText + '</div>',
+                    iconSize: [120, 30],
+                    iconAnchor: [60, -10] // anchor di tengah, offset ke atas
+                }),
+                interactive: false
+            });
+            totalDistanceMarkers.push(totalMarker);
+        }
+    });
+
+    // Fungsi untuk update marker jarak sesuai zoom
+    function updateDistanceMarkers() {
+        var zoom = map.getZoom();
+        if (zoom >= 14) {
+            distanceMarkers.forEach(function(marker){
+                if (!map.hasLayer(marker)) map.addLayer(marker);
+            });
+            totalDistanceMarkers.forEach(function(marker){
+                if (map.hasLayer(marker)) map.removeLayer(marker);
+            });
+        } else {
+            distanceMarkers.forEach(function(marker){
+                if (map.hasLayer(marker)) map.removeLayer(marker);
+            });
+            totalDistanceMarkers.forEach(function(marker){
+                if (!map.hasLayer(marker)) map.addLayer(marker);
+            });
+        }
+    }
+
+    map.on('zoomend', updateDistanceMarkers);
+    updateDistanceMarkers();
+
+    // auto zoom agar semua polyline/marker terlihat
+    var allPoints = Object.values(feederCoords).flat().map(p => p.coords);
+    if (allPoints.length > 0) {
+        map.fitBounds(allPoints);
+    }
+</script>
+{% elif act == 'detailligasaunfeeder' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Ligasaun Feeder</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'app:feeder' %}">Feeder</a></li>
+                    <li class="breadcrumb-item active">Detallu Ligasaun Feeder</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <h3 class="card-title"><i class="fas fa-bolt mr-2"></i> Detallu Ligasaun Feeder</h3>
+                    </div>
+                    <div class="card-body">
+                        <strong><i class="fas fa-bolt mr-2"></i> Feeder</strong>
+                        <p class="text-muted">
+                            {{dadus.naran_feeder}}
+                        </p>
+                        <hr>
+                        <strong><i class="fas fa-map-marker-alt mr-1"></i> Mapa Ligasaun Feeder</strong>
+                        <div id="map" style="height: 400px; width: 100%;"></div>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+{% load static %}
+{{ kordinat_feeder|json_script:"feeder-data" }}
+
+<script>
+    var map = L.map('map').setView([-8.5586, 125.5736], 7);
+
+    map.locate({
+        setView: true,
+        maxZoom: 13
+    });
+
+    var detail = L.icon({
+        iconUrl: '{% static "img/EDTL.png" %}',
+        iconSize: [10, 10]
+    });
+
+    // OpenStreetMap layer
+    var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    });
+
+    // Google Satellite layer (via third-party provider)
+    var googleSatLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+        attribution: '&copy; Google Satellite',
+        maxZoom: 20
+    });
+
+    // Add OSM as default
+    osmLayer.addTo(map);
+
+    // Layer control
+    var baseMaps = {
+        "OpenStreetMap": osmLayer,
+        "Google Satellite": googleSatLayer
+    };
+    L.control.layers(baseMaps).addTo(map);
+
+    var feederData = JSON.parse(document.getElementById('feeder-data').textContent);
+    console.log("feederData:", feederData);
+
+    // simpan koordinat per feeder
+    var feederCoords = {};
+
+    feederData.forEach(function (kf) {
+        if (kf.kordinat) {
+            var coords = kf.kordinat.split(',').map(Number);
+            if (coords.length === 2) {
+                // simpan marker
+                L.marker(coords, { icon: detail }).addTo(map)
+                    .bindPopup('Feeder: ' + kf.feeder.naran_feeder + '<br>Kordinat: ' + kf.kordinat);
+
+                // kelompokkan koordinat berdasarkan feeder
+                var feederName = kf.feeder.naran_feeder || "Unknown";
+                if (!feederCoords[feederName]) {
+                    feederCoords[feederName] = [];
+                }
+                feederCoords[feederName].push({coords: coords, id: kf.feeder.feeder_id});
+            }
+        }
+    });
+
+    // Fungsi kalkulasi jarak (haversine)
+    function calcDistance(latlng1, latlng2) {
+        var R = 6371e3; // meters
+        var lat1 = latlng1[0] * Math.PI / 180;
+        var lat2 = latlng2[0] * Math.PI / 180;
+        var dLat = (latlng2[0] - latlng1[0]) * Math.PI / 180;
+        var dLng = (latlng2[1] - latlng1[1]) * Math.PI / 180;
+
+        var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1) * Math.cos(lat2) *
+                Math.sin(dLng/2) * Math.sin(dLng/2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        var d = R * c;
+        return d; // meters
+    }
+
+    // buat polyline untuk tiap feeder secara terpisah dan kalkulasi jarak antar point
+    var distanceMarkers = [];
+    var totalDistanceMarkers = [];
+    Object.keys(feederCoords).forEach(function (feederName) {
+        var points = feederCoords[feederName];
+        if (points.length > 1) {
+            // Ambil array koordinat saja untuk polyline
+            var coordsArray = points.map(p => p.coords);
+            var polyline = L.polyline(coordsArray, { color: 'blue' }).addTo(map);
+
+            // Kalkulasi dan siapkan marker jarak antar point
+            var totalDist = 0;
+            for (var i = 0; i < coordsArray.length - 1; i++) {
+                var dist = calcDistance(coordsArray[i], coordsArray[i+1]);
+                totalDist += dist;
+                var midLat = (coordsArray[i][0] + coordsArray[i+1][0]) / 2;
+                var midLng = (coordsArray[i][1] + coordsArray[i+1][1]) / 2;
+                var distText = (dist/1000).toFixed(2) + " km";
+                // Buat marker jarak, tapi jangan tambahkan ke map dulu
+                var marker = L.marker([midLat, midLng], {
+                    icon: L.divIcon({
+                        className: 'distance-label',
+                        html: '<div style="background:#fff;border-radius:4px;padding:2px 6px;border:1px solid #007bff;font-size:12px;">' + distText + '</div>',
+                        iconSize: [60, 20]
+                    }),
+                    interactive: false
+                });
+                distanceMarkers.push(marker);
+            }
+            // Marker total distance di tengah polyline
+            var bounds = L.latLngBounds(coordsArray);
+            var center = bounds.getCenter();
+            var totalText = "Distansia Total: " + (totalDist/1000).toFixed(2) + " km";
+            // Geser marker total distance ke atas marker (offset Y)
+            var totalMarker = L.marker(center, {
+                icon: L.divIcon({
+                    className: 'total-distance-label',
+                    html: '<div style="background:#007bff;color:#fff;border-radius:6px;padding:4px 10px;border:2px solid #fff;font-size:14px;font-weight:bold;">' + totalText + '</div>',
+                    iconSize: [120, 30],
+                    iconAnchor: [60, -10] // anchor di tengah, offset ke atas
+                }),
+                interactive: false
+            });
+            totalDistanceMarkers.push(totalMarker);
+        }
+    });
+
+    // Fungsi untuk update marker jarak sesuai zoom
+    function updateDistanceMarkers() {
+        var zoom = map.getZoom();
+        if (zoom >= 14) {
+            distanceMarkers.forEach(function(marker){
+                if (!map.hasLayer(marker)) map.addLayer(marker);
+            });
+            totalDistanceMarkers.forEach(function(marker){
+                if (map.hasLayer(marker)) map.removeLayer(marker);
+            });
+        } else {
+            distanceMarkers.forEach(function(marker){
+                if (map.hasLayer(marker)) map.removeLayer(marker);
+            });
+            totalDistanceMarkers.forEach(function(marker){
+                if (!map.hasLayer(marker)) map.addLayer(marker);
+            });
+        }
+    }
+
+    map.on('zoomend', updateDistanceMarkers);
+    updateDistanceMarkers();
+
+    // auto zoom agar semua polyline/marker terlihat
+    var allPoints = Object.values(feederCoords).flat().map(p => p.coords);
+    if (allPoints.length > 0) {
+        map.fitBounds(allPoints);
+    }
+</script>
+{% elif act == 'inputtrafo' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Trafo</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'app:trafo' %}">Trafo</a></li>
+                    <li class="breadcrumb-item active">Formulariu Aumenta Trafo</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-table"></i>
+                        <h3 class="card-title mb-0">Input Dadus Trafo</h3> |
+                        <a href="{% url 'app:trafo' %}">
+                            <button style="border-radius: 6px;"><b>Back</b></button>
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'app:addTrafo' %}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="zona">Zona</label>
+                                <input type="text" class="form-control" id="zona" name="zona" placeholder="Prienxe Zona" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="feeder">Feeder</label>
+                                <select class="form-control" id="feeder" name="feeder" required>
+                                    <option value="">-------</option>
+                                    {% for f in feeder %}
+                                        <option value="{{ f.id }}">{{ f.naran_feeder }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="marka">Marka</label>
+                                <input type="text" class="form-control" id="marka" name="marka" placeholder="Prienxe Marka" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="map">Lokalizasaun Trafo:</label>
+                                <div id="map" style="height: 400px; width: 100%; border: 1px solid #ccc; border-radius: 8px;"></div>
+                                <input type="hidden" id="trafo_coords" name="kordinat" required>
+
+                                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+                                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+                                <script>
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    var map = L.map('map').setView([-8.558, 125.573], 14);
+                                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                        maxZoom: 19,
+                                        attribution: '&copy; OpenStreetMap contributors'
+                                    }).addTo(map);
+
+                                    var detail = L.icon({
+                                        iconUrl: '{% static "img/EDTL.png" %}',
+                                        iconSize: [10, 10]
+                                    });
+
+                                    var marker = null;
+                                    var coordsInput = document.getElementById('trafo_coords');
+
+                                    map.on('click', function(e) {
+                                        if (marker) {
+                                            map.removeLayer(marker);
+                                        }
+                                        marker = L.marker(e.latlng, { icon:detail, draggable: true }).addTo(map);
+                                        coordsInput.value = e.latlng.lat.toFixed(6) + ',' + e.latlng.lng.toFixed(6);
+
+                                        marker.on('dragend', function(ev) {
+                                            var pos = ev.target.getLatLng();
+                                            coordsInput.value = pos.lat.toFixed(6) + ',' + pos.lng.toFixed(6);
+                                        });
+                                    });
+                                });
+                                </script>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="border-radius: 6px;">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% elif act == 'edittrafo' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Trafo</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'app:trafo' %}">Trafo</a></li>
+                    <li class="breadcrumb-item active">Formulariu Atualiza Trafo</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-table"></i>
+                        <h3 class="card-title mb-0">Edit Dadus Trafo</h3> |
+                        <a href="{% url 'app:trafo' %}">
+                            <button style="border-radius: 6px;"><b>Back</b></button>
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="zona">Zona</label>
+                                <input type="text" class="form-control" id="zona" name="zona" placeholder="Prienxe Zona" required value="{{ data.zona }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="feeder">Feeder</label>
+                                <select class="form-control" id="feeder" name="feeder" required>
+                                    <option value="">-------</option>
+                                    {% for f in feeder %}
+                                        <option value="{{ f.id }}" {% if f.id == data.feeder.id %}selected{% endif %}>{{ f.naran_feeder }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="marka">Marka</label>
+                                <input type="text" class="form-control" id="marka" name="marka" placeholder="Prienxe Marka" required value="{{ data.marka }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="map">Lokalizasaun Trafo:</label>
+                                <div id="map" style="height: 400px; width: 100%; border: 1px solid #ccc; border-radius: 8px;"></div>
+                                <input type="hidden" id="trafo_coords" name="kordinat" required>
+
+                                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+                                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+                                <script>
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    var map = L.map('map').setView([-8.558, 125.573], 10);
+                                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                        maxZoom: 18,
+                                        attribution: '&copy; OpenStreetMap contributors'
+                                    }).addTo(map);
+
+                                    var detail = L.icon({
+                                        iconUrl: '{% static "img/EDTL.png" %}',
+                                        iconSize: [20, 20]
+                                    });
+
+                                    var marker = null;
+                                    const coordsInput = document.getElementById('trafo_coords');
+
+                                    // Ambil koordinat awal dari data (jika ada)
+                                    const initialCoords = "{{ data.kordinat }}";
+                                    if (initialCoords) {
+                                        const parts = initialCoords.split(',');
+                                        const lat = parseFloat(parts[0]);
+                                        const lng = parseFloat(parts[1]);
+                                        if (!isNaN(lat) && !isNaN(lng)) {
+                                            marker = L.marker([lat, lng], { icon: detail, draggable: true }).addTo(map);
+                                            map.setView([lat, lng], 15);
+                                            coordsInput.value = lat.toFixed(6) + ',' + lng.toFixed(6);
+
+                                            marker.on('dragend', function(ev) {
+                                                var pos = ev.target.getLatLng();
+                                                coordsInput.value = pos.lat.toFixed(6) + ',' + pos.lng.toFixed(6);
+                                            });
+                                        }
+                                    }
+
+                                    map.on('click', function(e) {
+                                        if (marker) {
+                                            map.removeLayer(marker);
+                                        }
+                                        marker = L.marker(e.latlng, { icon: detail, draggable: true }).addTo(map);
+                                        coordsInput.value = e.latlng.lat.toFixed(6) + ',' + e.latlng.lng.toFixed(6);
+
+                                        marker.on('dragend', function(ev) {
+                                            var pos = ev.target.getLatLng();
+                                            coordsInput.value = pos.lat.toFixed(6) + ',' + pos.lng.toFixed(6);
+                                        });
+
+                                        // map.flyTo(e.latlng, 15);
+                                    });
+                                });
+                                </script>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="border-radius: 6px;">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% elif act == 'detailtrafo' %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Trafo</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'app:trafo' %}">Trafo</a></li>
+                    <li class="breadcrumb-item active">Formulariu Detallu Trafo</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-table"></i>
+                        <h3 class="card-title mb-0">Detallu Dadus Trafo</h3> |
+                        <a href="{% url 'app:trafo' %}">
+                            <button style="border-radius: 6px;"><b>Back</b></button>
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <strong>Zona:</strong>
+                        <p class="text-muted">{{ data.zona }}</p>
+                        <hr>
+                        <strong>Feeder:</strong>
+                        <p class="text-muted">{{ data.feeder.naran_feeder }}</p>
+                        <hr>
+                        <strong>Marka:</strong>
+                        <p class="text-muted">{{ data.marka }}</p>
+                        <hr>
+                        <strong>Mapa Lokalizasaun Trafo:</strong>
+                        <div id="map" style="height: 400px; width: 100%;"></div>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var map = L.map('map').setView([-8.558, 125.573], 10);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var detail = L.icon({
+            iconUrl: '{% static "img/EDTL.png" %}',
+            iconSize: [20, 20]
+        });
+
+        // Ambil koordinat dari data
+        const coords = "{{ data.kordinat }}";
+        if (coords) {
+            const parts = coords.split(',');
+            const lat = parseFloat(parts[0]);
+            const lng = parseFloat(parts[1]);
+            if (!isNaN(lat) && !isNaN(lng)) {
+                L.marker([lat, lng], { icon: detail }).addTo(map);
+                map.setView([lat, lng], 15);
+            }
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}

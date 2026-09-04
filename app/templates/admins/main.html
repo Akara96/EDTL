@@ -1,0 +1,741 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_css %}
+{% endblock %}
+{% block content %}
+<!-- LEAFLET -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<!-- LEAFLET -->
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="m-0">Dashboard</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Home</a></li>
+          <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-6 col-6">
+        <div class="small-box bg-info">
+          <div class="inner" align="center">
+            <h1>{{totalKliente}}</h1>
+            <p>Total Kliente Registado</p>
+          </div>
+          <div class="icon">
+            <i class="ion ion-person"></i>
+          </div>
+          <a href="{% url 'app:kliente' %}" class="small-box-footer">Haree Liutan <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+      </div>
+
+      <div class="col-lg-6 col-6">
+        <div class="small-box bg-success">
+          <div class="inner" align="center">
+            <h1>{{totalMontajen}}</h1>
+            <p>Total Montagen Kontador Mensal </p>
+          </div>
+          <div class="icon">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <a href="{% url 'app:kontador' %}" class="small-box-footer">Haree Liutan <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body py-2">
+        <form method="get" class="form-inline align-items-center w-100" style="flex-wrap: nowrap;">
+          <label class="mb-0 mr-2 font-weight-bold" for="filter-date">
+            <i class="fas fa-filter mr-1"></i> Filtru Informasaun
+          </label>
+          <div class="input-group flex-grow-1" style="min-width:200px; width:100%; max-width:1100px;">
+            <input type="text" id="filter-date" name="data" class="form-control" autocomplete="off" placeholder="Opsaun Kalendariu">
+            <select name="tinan" id="tinan" class="form-control">
+                <option value="">Opsaun Tinan</option>
+                {% for year in listaTinan %}
+                  <option value="{{ year }}" {% if year == selected_tahun %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+            <select name="fulan" id="fulan" class="form-control">
+                <option value="">Opsaun Fulan</option>
+                {% for value, name in listaFulan %}
+                  <option value="{{ value }}" {% if value == filter_month %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+            <div class="input-group-append">
+              <button type="submit" class="btn btn-outline-secondary" style="border-radius: 0 6px 6px 0;">
+                <i class="fa fa-eye"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+        <!-- Flatpickr Date Picker -->
+        <link rel="stylesheet" href="{% static 'kalendariu/flatpickr.min.css' %}">
+        <script src="{% static 'kalendariu/flatpickr.js' %}"></script>
+        <script>
+          flatpickr("#filter-date", {
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            locale: {
+              firstDayOfWeek: 1
+            }
+          });
+        </script>
+        <style>
+          @media (max-width: 768px) {
+            .form-inline.align-items-center.w-100 {
+              flex-direction: column !important;
+              align-items: stretch !important;
+            }
+
+            .form-inline.align-items-center.w-100 label,
+            .form-inline.align-items-center.w-100 .input-group {
+              width: 100% !important;
+              margin-right: 0 !important;
+              margin-bottom: 8px;
+            }
+          }
+
+          .form-inline.align-items-center.w-100 .input-group.flex-grow-1 {
+            flex: 1 1 auto;
+          }
+        </style>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <section class="col-lg-8">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-map mr-1"></i>
+              Total Montagen Kontador bazeia ba Munisipiu no Lokalizasaun Kliente
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="tab-content p-0">
+              <div class="chart tab-pane active" id="sales-chart" style="position: relative; height: auto;">
+                <div id="map" style="width:100%; height:450px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="col-lg-4">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-table mr-1"></i>
+              Total Montagen Kontador bazeia ba Dadus Munisipiu
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="tab-content p-0">
+              <div class="chart tab-pane active" id="sales-chart" style="position: relative; height: auto;">
+                <table class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Munisipiu</th>
+                      <th>Total Kontador</th>
+                      <th>#</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                        {% for k in kontadorbymapa %}
+                          <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ k.trafo__feeder__munisipiu__munisipiu }}</td>
+                            <td>{{ k.kontador_count }}</td>
+                            <td>
+                              <a
+                              style="border-radius: 6px;"
+                              class="show-polygon-btn"
+                              data-branch="{{ k.trafo__feeder__munisipiu__munisipiu }}">
+                              <i class="fas fa-eye"></i>
+                            </a>
+                            </td>
+                          </tr>
+                        {% empty %}
+                          <tr>
+                            <td colspan="4" class="text-center">No data</td>
+                          </tr>
+                        {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+
+<!-- LEAFLET -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<!-- LEAFLET -->
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script>
+  var map = L.map('map').setView([-8.769408, 125.976319], 8);
+
+  var basemaps = {
+    OpenStreetMap: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 20
+    }),
+
+    GoogleSatellite: L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+      maxZoom: 20,
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+    }),
+  };
+  L.control.layers(basemaps, {}, { collapsed: false }).addTo(map);
+  basemaps.OpenStreetMap.addTo(map);
+
+  var lokaliza = L.icon({
+    iconUrl: '{% static "img/EDTL.png" %}',
+    iconSize: [12, 12]
+  });
+
+  var polygons = {};
+  var allPolygons = [];
+  var agentMarkers = [];
+
+  {% for area in kontadorbymapa %}
+    var latlngs_{{ area.id }} = [
+      {{ area.trafo__feeder__munisipiu__area|safe }}
+    ];
+
+    var polygon_{{ area.id }} = L.polygon(latlngs_{{ area.id }}, {
+      fillColor: '{{ area.trafo__feeder__munisipiu__outline_color }}',
+      weight: 1.5,
+      opacity: 1,
+      color: 'black',
+      dashArray: '2',
+      fillOpacity: 0.02
+    }).bindTooltip("<b>{{ area.kontador_count }}</b>", {
+      permanent: true,
+      direction: 'center',
+      className: 'my-label'
+    }).bindPopup("<b>{{ area.trafo__feeder__munisipiu__munisipiu }}</b>", {
+      maxWidth: 200
+    });
+    polygons["{{ area.trafo__feeder__munisipiu__munisipiu|escapejs }}"] = polygon_{{ area.id }};
+    allPolygons.push(polygon_{{ area.id }});
+    polygon_{{ area.id }}.addTo(map);
+  {% endfor %}
+
+  // Hide polygon tooltips when zoomed in past level 13, show otherwise
+  map.on('zoomend', function() {
+    var zoom = map.getZoom();
+    Object.values(polygons).forEach(function(polygon) {
+      var tooltip = polygon.getTooltip();
+      if (tooltip) {
+        if (zoom >= 10) {
+          polygon.closeTooltip();
+        } else {
+          polygon.openTooltip();
+        }
+      }
+    });
+  });
+
+  // Fungsi untuk membersihkan semua marker
+  function clearAgentMarkers() {
+    agentMarkers.forEach(function(marker) {
+      map.removeLayer(marker);
+    });
+    agentMarkers = [];
+  }
+
+  // Fungsi untuk memuat data marker
+  function loadAgentData(idBranch) {
+    return fetch('/kontadorByMunisipiu/' + encodeURIComponent(idBranch) + '/')
+      .then(response => response.json())
+      .then(data => {
+        if (data && data.coordinates && Array.isArray(data.coordinates)) {
+          return data.coordinates;
+        }
+        return [];
+      })
+      .catch(err => {
+        console.error('Failed to load agent data:', err);
+        return [];
+      });
+  }
+
+  // Fungsi untuk membuat konten popup dengan tabs berdasarkan struktur JSON baru
+  function createPopupContent(agent) {
+    // Helper function untuk cek dan tampilkan data
+    function getValue(data, defaultValue = '-') {
+      return data ? data : defaultValue;
+    }
+    
+    // Check if imajen is array and has items
+    function hasImajen() {
+      return agent.imajen && Array.isArray(agent.imajen) && agent.imajen.length > 0;
+    }
+    
+    // Generate HTML for imajen tab
+    function generateImajenHTML() {
+      if (!hasImajen()) {
+        return `
+          <div style="padding: 30px 20px; color: #6c757d;">
+            <i class="fas fa-image fa-2x mb-3"></i>
+            <p style="margin: 0;">La iha imajen disponível</p>
+          </div>
+        `;
+      }
+      
+      var html = `        
+        <div style="max-height: 250px; overflow-y: auto; padding-right: 5px;">
+      `;
+      
+      agent.imajen.forEach(function(img, index) {
+        html += `
+          <div style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+            <div style="text-align: center; margin-bottom: 8px;">
+              <strong style="color: #495057;">Imajen ${index + 1}</strong>
+            </div>
+            <center>
+            <img src="${getValue(img.imajen_url)}" 
+                 alt="${getValue(img.imajen_filename)}" 
+                 style="max-width: 100%; max-height: 150px; border-radius: 4px; margin-bottom: 5px; cursor: pointer;"
+                 onclick="window.open('${getValue(img.imajen_url)}', '_blank')"
+                 title="Klik hodi hare'e imajen boot">
+            <div style="font-size: 11px; color: #666; margin-top: 5px;">
+              <div><strong>Data:</strong> ${getValue(img.created_at)}</div>
+            </div> 
+            </center>            
+          </div>
+        `;
+      });
+      
+      html += `</div>`;
+      
+      return html;
+    }
+
+    var popupContent = `
+      <div style="min-width: 320px; max-width: 450px; font-family: 'Segoe UI', Arial, sans-serif;">
+        <div style="background: #2c3e50; color: white; padding: 12px 15px; margin: -16px -16px 15px -16px;">
+          <h5 style="margin: 0; font-size: 16px; font-weight: 600;">
+            <i class="fas fa-user-circle mr-2"></i>${getValue(agent.cliente.naran, 'Detallu Kliente')}
+          </h5>
+        </div>
+        
+        <!-- Tab Navigation -->
+        <div style="display: flex; margin-bottom: 15px; border-bottom: 1px solid #ddd;">
+          <button class="tab-button active" data-tab="kliente-${agent.id}" 
+            style="flex: 1; padding: 8px; background: #f8f9fa; border: none; border-bottom: 2px solid #007bff; font-weight: 500; cursor: pointer; border-right: 1px solid #ddd;">
+            Kliente
+          </button>
+          <button class="tab-button" data-tab="kontador-${agent.id}" 
+            style="flex: 1; padding: 8px; background: #f8f9fa; border: none; border-bottom: 1px solid #ddd; font-weight: 500; cursor: pointer; border-right: 1px solid #ddd;">
+            Kontador
+          </button>
+          <button class="tab-button" data-tab="imajen-${agent.id}" 
+            style="flex: 1; padding: 8px; background: #f8f9fa; border: none; border-bottom: 1px solid #ddd; font-weight: 500; cursor: pointer; border-right: 1px solid #ddd;">
+            Imajen ${agent.total_imajen ? `(${agent.total_imajen})` : ''}
+          </button>
+        </div>
+        
+        <!-- Tab Content -->
+        <div id="tab-content-container">
+          <!-- Tab Kliente -->
+          <div class="tab-content active" id="kliente-${agent.id}" style="display: block;">
+            <div style="max-height: 220px; overflow-y: auto; padding-right: 5px;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Naran Kliente:</strong>
+                    <span>${getValue(agent.cliente.naran)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">ID Identidade:</strong>
+                    <span>${getValue(agent.cliente.id_identidade)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Naran Kompanhia:</strong>
+                    <span>${getValue(agent.cliente.naran_kompanhia)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Kategoria:</strong>
+                    <span>${getValue(agent.cliente.kategoria_kliente)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Hela Fatin:</strong>
+                    <span>${getValue(agent.cliente.hela_fatin)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Endereçu:</strong>
+                    <span>${getValue(agent.cliente.endereco)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Telefone:</strong>
+                    <span>${getValue(agent.cliente.no_tlf)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Email:</strong>
+                    <span>${getValue(agent.cliente.email)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Data Rejistu:</strong>
+                    <span>${getValue(agent.cliente.data_rejistu)}</span>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          
+          <!-- Tab Kontador -->
+          <div class="tab-content" id="kontador-${agent.id}" style="display: none;">
+            <div style="max-height: 220px; overflow-y: auto; padding-right: 5px;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Nu Kontador:</strong>
+                    <span>${getValue(agent.contador.nu_kontador)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Phase:</strong>
+                    <span>${getValue(agent.contador.phase)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Disjuntor Jeral:</strong>
+                    <span>${getValue(agent.contador.disjuntor_jeral)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Medida Kabu:</strong>
+                    <span>${getValue(agent.contador.medida_kabu)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Numeru Trafo:</strong>
+                    <span>${getValue(agent.contador.numeru_trafo)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Numeru Pole:</strong>
+                    <span>${getValue(agent.contador.numeru_pole)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Konta Tuan:</strong>
+                    <span>${getValue(agent.contador.konta_tuan)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Ligasaun Arde:</strong>
+                    <span>${getValue(agent.contador.ligasaun_arde)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Kordinat:</strong>
+                    <span style="font-size: 12px; color: #666;">${getValue(agent.contador.kordinat)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Tekniku:</strong>
+                    <span>${getValue(agent.tekniku.tekniku_naran)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Zona Trafo:</strong>
+                    <span>${getValue(agent.trafo.trafo_zona)}</span>
+                  </td>
+                </tr>
+                ${agent.survey && agent.survey.tipu_ligasaun ? `
+                <tr>
+                  <td style="padding: 6px 0; border-top: 1px dashed #ddd;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Survey Tipu:</strong>
+                    <span>${getValue(agent.survey.tipu_ligasaun)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Data Survey:</strong>
+                    <span>${getValue(agent.survey.data_survey)}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0;">
+                    <strong style="color: #495057; min-width: 120px; display: inline-block;">Kalkulasaun:</strong>
+                    <span>$${getValue(agent.survey.kalkulasaun)}</span>
+                  </td>
+                </tr>
+                ` : ''}
+              </table>
+            </div>
+          </div>
+          
+          <!-- Tab Imajen -->
+          <div class="tab-content" id="imajen-${agent.id}" style="display: none;">
+            ${generateImajenHTML()}
+          </div>
+          </div>
+        </div>
+        
+        <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #ddd; text-align: center;">
+          <small style="color: #6c757d; font-size: 11px;">
+            Data rejistu: ${getValue(agent.created_at)}
+          </small>
+        </div>
+      </div>
+    `;
+    
+    return popupContent;
+  }
+
+  // Fungsi untuk menginisialisasi tab functionality di popup
+  function initTabs(popupElement) {
+    if (!popupElement) return;
+    
+    var tabButtons = popupElement.querySelectorAll('.tab-button');
+    var tabContents = popupElement.querySelectorAll('.tab-content');
+    
+    tabButtons.forEach(function(button) {
+      button.addEventListener('click', function() {
+        var tabId = this.getAttribute('data-tab');
+        
+        // Remove active class dari semua tab buttons
+        tabButtons.forEach(function(btn) {
+          btn.classList.remove('active');
+          btn.style.background = '#f8f9fa';
+          btn.style.borderBottom = '1px solid #ddd';
+          btn.style.fontWeight = '500';
+        });
+        
+        // Add active class ke tab button yang diklik
+        this.classList.add('active');
+        this.style.background = '#fff';
+        this.style.borderBottom = '2px solid #007bff';
+        this.style.fontWeight = '600';
+        
+        // Hide semua tab content
+        tabContents.forEach(function(content) {
+          content.style.display = 'none';
+        });
+        
+        // Show tab content yang sesuai
+        var activeTab = popupElement.querySelector('#' + tabId);
+        if (activeTab) {
+          activeTab.style.display = 'block';
+          
+        }
+      });
+    });
+  }
+
+  // Funsaun hodi fosai deit polygon ida nebe hili iha tabela no load agent points husi AJAX
+  function showPolygon(branch) {
+    // Clear existing agent markers
+    clearAgentMarkers();
+    
+    // Remove all polygons
+    allPolygons.forEach(function(p) {
+      map.removeLayer(p);
+    });
+    
+    // Show only the selected polygon
+    if (polygons[branch]) {
+      polygons[branch].addTo(map);
+
+      var bounds = polygons[branch].getBounds();
+      map.flyToBounds(bounds, {
+        duration: 1.2,
+        easeLinearity: 0.25
+      });
+
+      var idBranch = null;
+
+      // Buat mapping nama branch → id branch
+      var branchIdMap = {
+        {% for row in kontadorbymapa %}
+          "{{ row.trafo__feeder__munisipiu__munisipiu }}": {{ row.trafo__feeder__munisipiu__id }}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      };
+
+      if (branchIdMap.hasOwnProperty(branch)) {
+        idBranch = branchIdMap[branch];
+      }
+
+      // Load agent data dan buat marker dengan popup tabs
+      loadAgentData(idBranch).then(agents => {
+        agents.forEach(function(agent) {
+          if (agent.contador && agent.contador.kordinat) {
+            var coords = agent.contador.kordinat.split(',').map(Number);
+            var latitude = coords[0];
+            var longitude = coords[1];
+            
+            var marker = L.marker([latitude, longitude], { 
+              icon: lokaliza,
+              title: agent.cliente.naran || 'Kliente'
+            });
+            
+            // Bind popup dengan konten tabs
+            var popupContent = createPopupContent(agent);
+            var popup = L.popup({
+              maxWidth: 450,
+              minWidth: 350,
+              maxHeight: 500,
+              className: 'custom-popup'
+            }).setContent(popupContent);
+            
+            marker.bindPopup(popup);
+            
+            // Event untuk menginisialisasi tab setelah popup terbuka
+            marker.on('popupopen', function(e) {
+              var popupElement = e.popup.getElement();
+              if (popupElement) {
+                initTabs(popupElement);
+              }
+            });
+            
+            marker.addTo(map);
+            agentMarkers.push(marker);
+          }
+        });
+      }).catch(err => {
+        console.error('Error loading agent data:', err);
+      });
+    }
+  }
+
+  // Fungsi untuk menampilkan semua polygon kembali
+  function showAllPolygons() {
+    allPolygons.forEach(function(p) {
+      if (!map.hasLayer(p)) {
+        map.addLayer(p);
+      }
+    });
+    clearAgentMarkers();
+  }
+
+  // Handle button click in table
+  document.querySelectorAll('.show-polygon-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var branch = this.getAttribute('data-branch');
+      showPolygon(branch);
+    });
+  });
+  
+  // Tambahkan event listener untuk tombol back/close (opsional)
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      showAllPolygons();
+    }
+  });
+
+  // Style untuk popup custom - Sederhana dan bersih
+  var style = document.createElement('style');
+  style.innerHTML = `
+    .custom-popup .leaflet-popup-content-wrapper {
+      border-radius: 4px;
+      padding: 0;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .custom-popup .leaflet-popup-content {
+      margin: 16px;
+      line-height: 1.4;
+    }
+    
+    .custom-popup .leaflet-popup-tip {
+      background: #2c3e50;
+    }
+    
+    .custom-popup .leaflet-popup-close-button {
+      color: white;
+      font-size: 16px;
+      padding: 4px 6px 0 0;
+    }
+    
+    .custom-popup .leaflet-popup-close-button:hover {
+      color: #ddd;
+    }
+    
+    .tab-button {
+      transition: all 0.2s ease;
+      outline: none;
+    }
+    
+    .tab-button:hover {
+      background-color: #e9ecef !important;
+    }
+    
+    .tab-button.active {
+      background-color: #fff !important;
+    }
+    
+    /* Scrollbar styling */
+    .custom-popup ::-webkit-scrollbar {
+      width: 5px;
+    }
+    
+    .custom-popup ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    
+    .custom-popup ::-webkit-scrollbar-thumb {
+      background: #b0b0b0;
+      border-radius: 2px;
+    }
+    
+    .custom-popup ::-webkit-scrollbar-thumb:hover {
+      background: #888;
+    }
+    
+    /* Image styling */
+    .custom-popup img {
+      transition: transform 0.2s;
+    }
+    
+    .custom-popup img:hover {
+      transform: scale(1.02);
+    }
+  `;
+  document.head.appendChild(style);
+</script>
+{% endblock %}

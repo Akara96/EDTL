@@ -1,0 +1,167 @@
+{% load custom_filters %}
+{% block content %}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-table"></i>
+                        <h3 class="card-title mb-0">Dadus Feeder</h3> |
+                        <a href="{% url 'app:addFeeder' %}">
+                            <button style="border-radius: 6px;"><b>Add +</b></button>
+                        </a>
+                    </div>
+                    <div style="overflow-x: auto; white-space: nowrap; padding: 8px 12px;">
+                        <!-- "All" button -->
+                        <div
+                            class="agente-card active"
+                            data-agente="all"
+                            data-munisipiu="__all__"
+                            style="
+                                display: inline-block;
+                                min-width: 160px;
+                                height: 36px;
+                                margin-right: 14px;
+                                border-radius: 12px;
+                                box-shadow: 0 4px 16px rgba(80,120,200,0.10), 0 1.5px 4px rgba(80,120,200,0.08);
+                                padding: 8px 18px;
+                                vertical-align: top;
+                                cursor: pointer;
+                                color: #222;
+                                border: 1.5px solid #282829ff;
+                                transition: box-shadow 0.2s, border 0.2s, background 0.2s, color 0.2s;
+                                font-size: 0.93rem;
+                                font-family: 'Segoe UI', Arial, sans-serif;
+                                letter-spacing: 0.01em;
+                                position: relative;
+                                overflow: hidden;
+                            "
+                        >
+                            <div style="font-weight: 600; margin-bottom: 2px; font-size: 0.78em; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                All
+                            </div>
+                        </div>
+
+                        {% for row in munisipiu %}
+                        <div
+                            class="agente-card"
+                            data-agente="{{ row.munisipiu_id }}"
+                            data-munisipiu="{{ row.munisipiu|escape }}"
+                            style="
+                                display: inline-block;
+                                min-width: 160px;
+                                height: 36px;
+                                margin-right: 14px;
+                                border-radius: 12px;
+                                box-shadow: 0 4px 16px rgba(80,120,200,0.10), 0 1.5px 4px rgba(80,120,200,0.08);
+                                padding: 8px 18px;
+                                vertical-align: top;
+                                cursor: pointer;
+                                color: #222;
+                                border: 1.5px solid #282829ff;
+                                transition: box-shadow 0.2s, border 0.2s, background 0.2s, color 0.2s;
+                                font-size: 0.93rem;
+                                font-family: 'Segoe UI', Arial, sans-serif;
+                                letter-spacing: 0.01em;
+                                position: relative;
+                                overflow: hidden;
+                            "
+                        >
+                            <div style="font-weight: 600; margin-bottom: 2px; font-size: 0.78em; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                {{ row.munisipiu|escape }}
+                            </div>
+                        </div>
+
+                        {% if forloop.first %}
+                        <style>
+                            .agente-card.active { background: #c6c8cb; color: #fff; border-color: #d8dadd; box-shadow: 0 6px 18px rgba(43,124,255,0.18); }
+                        </style>
+                        <script>
+                            (function(){
+                                function setActive(el){
+                                    document.querySelectorAll('.agente-card').forEach(function(c){ c.classList.remove('active'); });
+                                    if(el) el.classList.add('active');
+                                }
+
+                                function filterTableBy(mun){
+                                    var rows = document.querySelectorAll('#example1 tbody tr');
+                                    var target = (mun || '').toString().trim().toLowerCase();
+                                    rows.forEach(function(r){
+                                        var cell = r.cells[1]; // second column: Munisipiu
+                                        if(!cell){ r.style.display = ''; return; }
+                                        var text = cell.textContent.trim().toLowerCase();
+                                        if(target === '__all__' || target === '') {
+                                            r.style.display = '';
+                                        } else {
+                                            r.style.display = (text === target) ? '' : 'none';
+                                        }
+                                    });
+                                }
+
+                                // delegation: handle clicks on container
+                                var container = document.currentScript.parentElement;
+                                container.addEventListener('click', function(ev){
+                                    var card = ev.target;
+                                    while(card && !card.classList.contains('agente-card') && card !== container) card = card.parentElement;
+                                    if(!card || card === container) return;
+                                    var muni = card.getAttribute('data-munisipiu') || '__all__';
+                                    setActive(card);
+                                    filterTableBy(muni);
+                                });
+
+                                // initial: show all
+                                filterTableBy('__all__');
+                            })();
+                        </script>
+                        {% endif %}
+                    {% endfor %}
+                    </div>
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    <div class="card-body">
+                        <table id="example1" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Munisipiu</th>
+                                    <th>Naran Feeder</th>
+                                    <th>Deskrisaun Zona</th>
+                                    <th>#</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in dadus %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{data.munisipiu}}</td>
+                                    <td>{{data.naran_feeder}}</td>
+                                    <td>{{data.deskrisaun_zona}}</td>
+                                    <td>
+                                        <a href="{% url 'app:editFeeder' data.id|encrypt %}" class="btn btn-sm">
+                                            <button style="border-radius: 4px;"><i class="fas fa-edit"></i></button>
+                                        </a>
+                                        |
+                                        <a href="{% url 'app:detailLigasaunFeeder' data.id|encrypt %}" class="btn btn-sm">
+                                            <button style="border-radius: 4px;"><i class="fas fa-map"></i></button>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

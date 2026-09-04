@@ -1,0 +1,271 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report - EDTL</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.4;
+            color: #333;
+            font-size: 11pt;
+            background: #ffffff;
+        }
+        
+        /* Header Section */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #2c3e50;
+        }
+        
+        .company-name {
+            font-size: 18pt;
+            color: #2c3e50;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        
+        .company-subtitle {
+            font-size: 9pt;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .company-info {
+            font-size: 9pt;
+            color: #444;
+            margin-top: 5px;
+            line-height: 1.3;
+        }
+        
+        /* Report Info */
+        .report-info {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .report-title {
+            color: #2c3e50;
+            font-size: 14pt;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .report-subtitle {
+            color: #666;
+            font-size: 10pt;
+            margin-bottom: 8px;
+        }
+        
+        .report-date {
+            color: #666;
+            font-size: 9pt;
+        }
+        
+        /* Table Section */
+        .table-section {
+            margin-top: 15px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10pt;
+            margin-bottom: 20px;
+        }
+        
+        table thead {
+            background: #2c3e50;
+            color: white;
+        }
+        
+        table th {
+            padding: 10px 8px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid #2c3e50;
+        }
+        
+        table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+        
+        table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        /* Summary Section */
+        .summary-section {
+            margin-top: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        .summary-title {
+            font-size: 11pt;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            text-align: center;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .summary-item {
+            text-align: center;
+            padding: 12px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .summary-value {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 5px 0;
+        }
+        
+        .summary-label {
+            font-size: 10pt;
+            color: #666;
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            font-size: 9pt;
+            color: #666;
+        }
+        
+        /* Utilities */
+        .text-right {
+            text-align: right;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .text-bold {
+            font-weight: bold;
+        }
+        
+        .currency {
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                font-size: 10pt;
+            }
+            
+            table {
+                font-size: 9pt;
+            }
+            
+            .summary-section {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body onload="window.print();">
+    <!-- Header Section -->
+    <div class="header">
+        <img src="{% static 'img/EDTL.png' %}" height="100" width="100"><br>
+        <div class="company-name">EDTL – Eletricidade de Timor Leste</div>
+        <!-- <div class="company-subtitle">Electricity Company of Timor-Leste</div> -->
+        <div class="company-info">
+            Estrada de Balide, Caicoli, Dili | Phone: +670 3324507 | Email: info@edtl.tl
+        </div>
+    </div>
+    
+    <!-- Report Info -->
+    <div class="report-info">
+        <div class="report-title">RELATORIU KONTADOR ELEKTRIKU</div>
+        <div class="report-subtitle">Report of Electrical Meters Data</div>
+        <div class="report-date">Data: {% now "d F Y H:i" %}</div>
+    </div>
+    
+    <!-- Table Section -->
+    <div class="table-section">
+        <table>
+            <thead>
+                <tr>
+                    <th width="5%">#</th>
+                    <th width="15%">Nu. Kontador</th>
+                    <th width="20%">Naran Kliente</th>
+                    <th width="15%">Munisipiu</th>
+                    <th width="15%">Feeder</th>
+                    <th width="10%">Trafo</th>
+                    <!-- <th width="10%">Status</th> -->
+                    <th width="10%" class="text-right">Montante (USD)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data %}
+                <tr>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td class="text-bold">{{ item.nu_kontador|default:"-" }}</td>
+                    <td>{{ item.naran_kliente|default:"-" }}</td>
+                    <td>{{ item.munisipiu|default:"-" }}</td>
+                    <td>{{ item.feeder|default:"-" }}</td>
+                    <td>{{ item.trafo|default:"-" }}</td>
+                    <!-- <td class="text-center">{{ item.status|default:"-" }}</td> -->
+                    <td class="text-right currency">{{ item.montante|default:"0.00" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Summary Section -->
+    <div class="summary-section">
+        <!-- <div class="summary-title">RESUMU DADUS</div> -->
+        <div class="summary-grid">
+            <div class="summary-item">
+                <div class="summary-label">Total Kontador</div>
+                <div class="summary-value">{{ total_data|default:"0" }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Total Rendimentu</div>
+                <div class="summary-value currency">${{ total_pendapatan|default:"0.00" }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer">
+        <!-- <div>© {% now "Y" %} EDTL – Eletricidade de Timor Leste. All rights reserved.</div> -->
+        <!-- <div style="margin-top: 5px;">Page 1 of 1</div> -->
+    </div>
+</body>
+</html>

@@ -1,0 +1,174 @@
+{% load custom_filters %}
+{% block content %}
+{% if act == 'show' %}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+                        <i class="fas fa-map"></i>
+                        <h3 class="card-title mb-0">Mapamentu Ligasaun Feeder</h3> |
+                        <a href="{% url 'app:addLigasaun' %}">
+                            <button style="border-radius: 6px;"><b>Add +</b></button>
+                        </a>
+                    </div>
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    <div class="card-body">
+                        <div id="map" style="height: 400px; width: 100%;"></div>
+                        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+                        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+                        {% load static %}
+                        {{ dadus|json_script:"feeder-data" }}
+
+                        <script>
+                            var map = L.map('map').setView([-8.5586, 125.5736], 7);
+
+                            map.locate({
+                                setView: true,
+                                maxZoom: 13
+                            });
+
+                            var detail = L.icon({
+                                iconUrl: '{% static "img/EDTL.png" %}',
+                                iconSize: [10, 10]
+                            });
+
+                            // OpenStreetMap layer
+                            var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                attribution: '&copy; OpenStreetMap contributors'
+                            });
+
+                            // Google Satellite layer (via third-party provider)
+                            var googleSatLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                                attribution: '&copy; Google Satellite',
+                                maxZoom: 20
+                            });
+
+                            // Add OSM as default
+                            osmLayer.addTo(map);
+
+                            // Layer control
+                            var baseMaps = {
+                                "OpenStreetMap": osmLayer,
+                                "Google Satellite": googleSatLayer
+                            };
+                            L.control.layers(baseMaps).addTo(map);
+
+                            var editLigasaunUrlBase = "{% url 'app:editLigasaun' 'ID_PLACEHOLDER' %}";
+                            var detailLigasaunUrlBase = "{% url 'app:detailLigasaun' 'ID_PLACEHOLDER' %}";
+
+                            var feederData = JSON.parse(document.getElementById('feeder-data').textContent);
+                            console.log("feederData:", feederData);
+
+                            // simpan koordinat per feeder
+                            var feederCoords = {};
+
+                            feederData.forEach(function (kf) {
+                                if (kf.kordinat) {
+                                    var coords = kf.kordinat.split(',').map(Number);
+                                    if (coords.length === 2) {
+                                        // simpan marker
+                                        L.marker(coords, { icon: detail }).addTo(map)
+                                            .bindPopup('Feeder: ' + kf.feeder.naran_feeder + '<br>Kordinat: ' + kf.kordinat);
+
+                                        // kelompokkan koordinat berdasarkan feeder
+                                        var feederName = kf.feeder.naran_feeder || "Unknown";
+                                        if (!feederCoords[feederName]) {
+                                            feederCoords[feederName] = [];
+                                        }
+                                        feederCoords[feederName].push({coords: coords, id: kf.feeder.feeder_id});
+                                    }
+                                }
+                            });
+
+                            
+                            // buat polyline untuk tiap feeder secara terpisah
+                            Object.keys(feederCoords).forEach(function (feederName) {
+                                var points = feederCoords[feederName];
+                                if (points.length > 1) {
+                                    // Ambil array koordinat saja untuk polyline
+                                    var coordsArray = points.map(p => p.coords);
+                                    var polyline = L.polyline(coordsArray, { color: 'blue' }).addTo(map);
+
+                                    
+                                    // Event klik polyline
+                                    polyline.on('click', function (e) {
+                                        // Ambil semua id dari feeder ini
+                                        var ids = points.map(p => p.id);
+
+                                        var urlEdit = editLigasaunUrlBase.replace('ID_PLACEHOLDER', ids[0]);
+                                        var urlDetail = detailLigasaunUrlBase.replace('ID_PLACEHOLDER', ids[0]);
+
+                                        // Buat custom dialog
+                                        var dialogHtml = `
+                                            <div id="custom-dialog" style="
+                                                position: fixed;
+                                                top: 50%;
+                                                left: 50%;
+                                                transform: translate(-50%, -50%);
+                                                background: #fff;
+                                                border-radius: 10px;
+                                                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                                                padding: 24px 32px;
+                                                z-index: 9999;
+                                                min-width: 320px;
+                                            ">
+                                                <h4 style="margin-bottom: 16px;">Detail Feeder</h4>
+                                                <div style="margin-bottom: 12px;">
+                                                    <b>Feeder:</b> ${feederName}<br>
+                                                    <b>Total Ring:</b> ${points.length}<br>                                                    
+                                                </div>
+                                                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                                                    <a id="edit-feeder-link" href="${urlEdit}" style="text-decoration: none;">
+                                                        <button style="background: #007bff; color: #fff; border: none; border-radius: 5px; padding: 6px 16px;">Atualiza</button>
+                                                    </a>
+                                                    <a id="edit-feeder-link" href="${urlDetail}" style="text-decoration: none;">
+                                                        <button style="background: #007bff; color: #fff; border: none; border-radius: 5px; padding: 6px 16px;">Detallu</button>
+                                                    </a>
+                                                    <button id="close-dialog" style="background: #6c757d; color: #fff; border: none; border-radius: 5px; padding: 6px 16px;">Close</button>
+                                                </div>
+                                            </div>
+                                            <div id="dialog-backdrop" style="
+                                                position: fixed;
+                                                top: 0; left: 0; right: 0; bottom: 0;
+                                                background: rgba(0,0,0,0.3);
+                                                z-index: 9998;
+                                            "></div>
+                                        `;
+                                        $('body').append(dialogHtml);
+
+                                        $('#close-dialog, #dialog-backdrop').on('click', function () {
+                                            $('#custom-dialog').remove();
+                                            $('#dialog-backdrop').remove();
+                                        });
+                                    });
+                                }
+                            });
+
+
+                            // auto zoom agar semua polyline/marker terlihat
+                            var allPoints = Object.values(feederCoords).flat();
+                            if (allPoints.length > 0) {
+                                map.fitBounds(allPoints);
+                            }
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

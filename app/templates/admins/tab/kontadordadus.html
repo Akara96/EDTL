@@ -1,0 +1,31 @@
+{% load custom_filters %}
+<table id="example1" class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Numeru</th>
+            <th>Disjuntor</th>
+            <th>Medida</th>
+            <th>Numeru Trafo</th>
+            <th>Numeru Pole</th>
+            <th>Konta Tuan</th>
+            <th>Ligasaun Arde</th>
+            <th>Trafo|Feeder|Munisipiu</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for data in dadus %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{data.nu_kontador}}</td>
+            <td>{{data.disjuntor_jeral}}</td>
+            <td>{{data.medida_kabu}}</td>
+            <td>{{data.numeru_trafo}}</td>
+            <td>{{data.numeru_pole}}</td>
+            <td>{{data.konta_tuan}}</td>
+            <td>{{data.ligasaun_arde}}</td>
+            <td>{{data.trafo.zona}}|{{data.trafo.feeder}}|{{data.trafo.feeder.munisipiu}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

@@ -1,0 +1,62 @@
+{% load custom_filters %}
+{% if act == 'show' %}
+<div class="card">
+<div class="card-header d-flex align-items-center justify-content-left" style="gap: 10px;">
+    <i class="fas fa-table"></i>
+    <h3 class="card-title mb-0">Dadus Kliente Pedidu</h3>
+</div>
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'success' %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% endif %}
+{% endfor %}
+{% endif %}
+<div class="card-body">
+    <table id="example1" class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Naran Kliente</th>
+                <th>Numeru</th>
+                <th>Email</th>
+                <th>Data Pedidu</th>
+                <th>Aldeia|Suku|Postu|Munisipiu</th>
+                <th>#</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in dadus %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{data.naran_kliente}}</td>
+                <td>{{data.numeru}}</td>
+                <td>{{data.email}}</td>
+                <td>{{ data.created_at|date:"Y-m-d H:i:s" }}</td>
+                <td>
+                    {{ data.aldeia.naran_aldeia }} |
+                    {{ data.aldeia.suku.suku }} |
+                    {{ data.aldeia.suku.postu.postu }} |
+                    {{ data.aldeia.suku.postu.munisipiu.munisipiu }}
+                </td>
+                <td>
+                    <a href="{% url 'app:sendEmail' data.id|encrypt %}">
+                        <button style="border-radius: 4px;">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+{% elif act == 'send' %}
+SEND EMAIL
+{% endif %}

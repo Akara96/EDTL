@@ -1,0 +1,38 @@
+{% load custom_filters %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<table id="example1" class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Nu</th>
+            <th>Munisipiu</th>
+            <th width="160px">#</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in dadus %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ row.munisipiu }}</td>
+                <td align="center">
+                    <a href="{% url 'app:editMunisipiu' row.id|encrypt %}">
+                        <button style="border-radius: 6px;"><i class="fas fa-edit"></i></button>
+                    </a>
+                    |
+                    <a href="{% url 'app:detailMunisipiu' row.id|encrypt %}">
+                        <button style="border-radius: 6px;"><i class="fas fa-eye"></i></button>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
