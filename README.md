@@ -1,58 +1,58 @@
 # EDTL
 
-## Deskripsi
-EDTL adalah sebuah aplikasi berbasis web yang dibangun menggunakan framework Django (Python). Aplikasi ini dirancang untuk memudahkan manajemen dan visualisasi data, serta menyediakan antarmuka pengguna yang responsif dan mudah digunakan.
+## Description
+EDTL is a web-based application built using the Django (Python) framework. This application is designed to facilitate data management and visualization, providing a responsive and user-friendly interface.
 
-*(Catatan: Anda dapat menyesuaikan deskripsi ini lebih lanjut sesuai dengan tujuan spesifik dari proyek EDTL)*
+*(Note: You can further customize this description according to the specific goals of the EDTL project)*
 
-## Fitur Utama
-- Manajemen data terintegrasi
-- Antarmuka pengguna yang responsif dengan template modern
-- Terintegrasi dengan berbagai layanan eksternal (termasuk fitur AI/Gemini)
-- Sistem autentikasi dan otorisasi
+## Key Features
+- Integrated data management
+- Responsive user interface with a modern template
+- Integration with various external services (including AI/Gemini features)
+- Authentication and authorization system
 
-## Prasyarat
-Pastikan sistem Anda sudah terinstal:
-- Python 3.8 atau lebih baru
+## Prerequisites
+Ensure your system has the following installed:
+- Python 3.8 or newer
 - pip (Python package installer)
 
-## Instalasi & Menjalankan Proyek Secara Lokal
+## Local Setup & Installation
 
-1. **Clone repositori ini:**
+1. **Clone this repository:**
    ```bash
    git clone https://github.com/Akara96/EDTL.git
    cd EDTL
    ```
 
-2. **Buat dan aktifkan virtual environment (opsional namun sangat disarankan):**
+2. **Create and activate a virtual environment (optional but highly recommended):**
    ```bash
    python -m venv venv
-   # Di Windows
+   # On Windows
    venv\Scripts\activate
-   # Di macOS/Linux
+   # On macOS/Linux
    source venv/bin/activate
    ```
 
-3. **Instal dependensi yang diperlukan:**
+3. **Install the required dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Jalankan migrasi database:**
+4. **Run database migrations:**
    ```bash
    python manage.py migrate
    ```
 
-5. **Jalankan server pengembangan:**
+5. **Start the development server:**
    ```bash
    python manage.py runserver
    ```
 
-6. Akses aplikasi melalui browser di `http://127.0.0.1:8000/`.
+6. Access the application via your web browser at `http://127.0.0.1:8000/`.
 
-## Teknologi yang Digunakan
+## Technologies Used
 - Python
 - Django
-- SQLite (Database default)
+- SQLite (Default database)
 - HTML, CSS, JavaScript (Bootstrap / AdminLTE)
-- Docker (Tersedia dukungan Docker)
+- Docker (Docker support included)
